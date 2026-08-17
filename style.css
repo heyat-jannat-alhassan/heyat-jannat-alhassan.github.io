@@ -330,3 +330,43 @@ footer{
   }
 
   }
+/* فقط رنگ اصلی را عوض می‌کنیم */
+.menu,
+.drawer button,
+.drawer .admin,
+.hero span,
+.section small,
+.arr,
+.tag,
+.channels a{
+  color:#FFD700;
+}
+
+.primary{
+  background:#FFD700;
+  color:#050505;
+}
+
+.primary:hover{
+  background:#FFE44D;
+}
+
+.hero{
+  background:radial-gradient(
+    circle at 15% 45%,
+    #292400,
+    transparent 38%
+  );
+}
+
+.tag{
+  border-color:#806900;
+}
+
+.channels a{
+  border-color:#806900;
+}
+
+.arr{
+  border-color:#333;
+}
