@@ -1,15 +1,6 @@
-const reports=[
- {title:"گزارش شور محرم",date:"۱۵ محرم ۱۴۰۵",audio:"شور",event:"عزاداری",person:"کربلایی مسعود یوسفی جو",duration:"نمونه",file:""},
- {title:"گزارش روضه محرم",date:"۱۴ محرم ۱۴۰۵",audio:"روضه",event:"عزاداری",person:"کربلایی مسعود یوسفی جو",duration:"نمونه",file:""},
- {title:"گزارش زمینه",date:"۱۲ محرم ۱۴۰۵",audio:"زمینه",event:"عزاداری",person:"کربلایی مسعود یوسفی جو",duration:"نمونه",file:""},
- {title:"سخنرانی مراسم",date:"۱۰ محرم ۱۴۰۵",audio:"سخنرانی",event:"عزاداری",person:"حجت‌الاسلام سید امیر سید علیخانی",duration:"نمونه",file:""}
-];
-const card=r=>`<article class="card"><span class="tag">${r.audio}</span><h4>${r.title}</h4><div class="meta">📅 ${r.date}<br>🎤 ${r.person}<br>🏴 ${r.event}</div>${r.file?`<audio class="player" controls preload="metadata" src="${r.file}"></audio><a class="download" href="${r.file}" download>⬇️ دانلود مستقیم صوت</a>`:`<div class="meta" style="margin-top:14px">فایل نمونه هنوز بارگذاری نشده</div>`}</article>`;
-const latest=document.getElementById("latestRow"),grid=document.getElementById("archiveGrid");
-latest.innerHTML=reports.map(card).join(""); grid.innerHTML=reports.map(card).join("");
-document.getElementById("next").onclick=()=>latest.scrollBy({left:-320,behavior:"smooth"});
-document.getElementById("prev").onclick=()=>latest.scrollBy({left:320,behavior:"smooth"});
-function filter(){let q=document.getElementById("search").value.trim();let a=document.getElementById("audioType").value,e=document.getElementById("eventType").value,y=document.getElementById("year").value,p=document.getElementById("person").value;
-let out=reports.filter(r=>(!q||[r.title,r.person,r.date].join(" ").includes(q))&&(!a||r.audio===a)&&(!e||r.event===e)&&(!y||r.date.includes(y))&&(!p||r.person===p));grid.innerHTML=out.length?out.map(card).join(""):`<div class="meta">گزارشی با این مشخصات پیدا نشد.</div>`;
-}
-document.querySelectorAll(".filters input,.filters select").forEach(x=>x.addEventListener("input",filter));
+const reports=[{title:"شور محرم",date:"۱۵ محرم ۱۴۰۵",style:"شور",event:"عزاداری",reciter:"کربلایی مسعود یوسفی جو",speaker:"",file:""},{title:"روضه محرم",date:"۱۴ محرم ۱۴۰۵",style:"روضه",event:"عزاداری",reciter:"کربلایی مسعود یوسفی جو",speaker:"",file:""},{title:"زمینه",date:"۱۲ محرم ۱۴۰۵",style:"زمینه",event:"عزاداری",reciter:"کربلایی مسعود یوسفی جو",speaker:"",file:""},{title:"سخنرانی مراسم",date:"۱۰ محرم ۱۴۰۵",style:"سخنرانی",event:"عزاداری",reciter:"",speaker:"حجت‌الاسلام سید امیر سید علیخانی",file:""}];
+const card=r=>`<article class="card"><span class="tag">${r.style}</span><h4>${r.title}</h4><div class="meta">📅 ${r.date}<br>🎤 ${r.reciter||"—"}<br>🗣️ ${r.speaker||"—"}<br>🏴 ${r.event}</div>${r.file?`<audio controls style="width:100%;margin-top:12px" src="${r.file}"></audio>`:`<div class="meta" style="margin-top:12px">فایل نمونه هنوز بارگذاری نشده</div>`}</article>`;
+const row=document.getElementById("latestRow"),grid=document.getElementById("grid");function render(list){row.innerHTML=list.map(card).join("");grid.innerHTML=list.map(card).join("")}render(reports);
+document.getElementById("next").onclick=()=>row.scrollBy({left:-300,behavior:"smooth"});document.getElementById("prev").onclick=()=>row.scrollBy({left:300,behavior:"smooth"});
+function filter(){const q=document.getElementById("q").value.trim(),s=document.getElementById("style").value,e=document.getElementById("event").value,y=document.getElementById("year").value,r=document.getElementById("reciter").value,sp=document.getElementById("speaker").value;render(reports.filter(x=>(!q||[x.title,x.reciter,x.speaker,x.date].join(" ").includes(q))&&(!s||x.style===s)&&(!e||x.event===e)&&(!y||x.date.includes(y))&&(!r||x.reciter===r)&&(!sp||x.speaker===sp)))}document.querySelectorAll(".filters input,.filters select").forEach(x=>x.addEventListener("input",filter));
+const d=document.getElementById("drawer"),shade=document.getElementById("shade");document.getElementById("menuBtn").onclick=()=>{d.classList.add("open");shade.classList.add("show")};document.getElementById("close").onclick=closeMenu;shade.onclick=closeMenu;document.querySelectorAll(".drawer a").forEach(a=>a.onclick=closeMenu);function closeMenu(){d.classList.remove("open");shade.classList.remove("show")}

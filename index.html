@@ -1,52 +1,8 @@
-<!doctype html>
-<html lang="fa" dir="rtl">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>هیئت جنت الحسن | آرشیو گزارش صوتی</title>
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header class="topbar">
-  <div class="brand"><span class="mark">ج</span><div><h1>هیئت جنت الحسن</h1><p>آرشیو گزارش‌های صوتی</p></div></div>
-  <nav><a href="#latest">آخرین گزارش‌ها</a><a href="#archive">آرشیو</a><a href="#about">درباره</a></nav>
-</header>
-
-<main>
-<section class="hero">
-  <div>
-    <span class="eyebrow">شروع آرشیو: محرم ۱۴۰۵</span>
-    <h2>گزارش‌های صوتی هیئت<br><strong>جنت الحسن</strong></h2>
-    <p>آرشیوی مرتب، قابل جست‌وجو و ساده برای پخش و دانلود گزارش‌های صوتی.</p>
-    <a class="primary" href="#archive">مشاهده آرشیو</a>
-  </div>
-  <div class="hero-symbol">🎙️</div>
-</section>
-
-<section id="latest" class="section">
-  <div class="section-head"><div><span class="eyebrow">تازه‌ترین‌ها</span><h3>آخرین گزارش‌ها</h3></div><div class="arrows"><button id="prev">‹</button><button id="next">›</button></div></div>
-  <div class="latest-row" id="latestRow"></div>
-</section>
-
-<section id="archive" class="section">
-  <div class="section-head"><div><span class="eyebrow">محرم ۱۴۰۵ به بعد</span><h3>آرشیو گزارش‌ها</h3></div></div>
-  <div class="filters">
-    <input id="search" placeholder="جست‌وجوی عنوان، مداح یا سخنران...">
-    <select id="audioType"><option value="">سبک صوت</option><option>سخنرانی</option><option>روضه</option><option>زمینه</option><option>تک</option><option>شور</option></select>
-    <select id="eventType"><option value="">سبک مراسم</option><option>عزاداری</option><option>مولودی</option></select>
-    <select id="year"><option value="">سال</option><option>۱۴۰۵</option></select>
-    <select id="person"><option value="">مداح / سخنران</option><option>کربلایی مسعود یوسفی جو</option><option>حجت‌الاسلام سید امیر سید علیخانی</option></select>
-  </div>
-  <div id="archiveGrid" class="archive-grid"></div>
-</section>
-
-<section id="about" class="about">
-  <h3>درباره آرشیو</h3>
-  <p>این نسخه اولیه برای آرشیو گزارش‌های صوتی هیئت جنت الحسن طراحی شده است. در نسخه نهایی، پنل مدیریت برای افزودن گزارش، مداح، سخنران و مدیریت آرشیو نیز اضافه می‌شود.</p>
-</section>
-</main>
-
-<footer>هیئت جنت الحسن © ۱۴۰۵</footer>
-<script src="app.js"></script>
-</body>
-</html>
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>هیئت جنت الحسن | آرشیو گزارش صوتی</title><link rel="stylesheet" href="style.css"></head><body>
+<header class="top"><button class="menu" id="menuBtn">☰</button><div class="brand"><div class="logo">لوگو</div><div><h1>هیئت جنت الحسن</h1><p>آرشیو گزارش‌های صوتی</p></div></div></header>
+<div class="drawer" id="drawer"><button id="close">×</button><h2>منوی سایت</h2><a href="#home">خانه</a><a href="#latest">آخرین گزارش‌ها</a><a href="#archive">آرشیو صوتی</a><a href="#reciters">مداحان</a><a href="#speakers">سخنرانان</a><a href="#styles">سبک‌ها</a><a href="#events">مراسم</a><a href="#channels">کانال‌های هیئت</a><a class="admin" href="#admin">🔐 پنل مدیریت</a></div><div class="shade" id="shade"></div>
+<main id="home"><section class="hero"><span>شروع آرشیو: محرم ۱۴۰۵</span><h2>گزارش‌های صوتی<br><b>هیئت جنت الحسن</b></h2><p>آرشیوی مرتب، قابل جست‌وجو و ساده برای پخش و دانلود گزارش‌های صوتی هیئت جنت الحسن.</p></section>
+<section id="latest" class="section"><div class="head"><div><small>تازه‌ترین‌ها</small><h3>آخرین گزارش‌ها</h3></div><div><button class="arr" id="prev">‹</button><button class="arr" id="next">›</button></div></div><div class="row" id="latestRow"></div></section>
+<section id="archive" class="section"><small>محرم ۱۴۰۵ به بعد</small><h3>آرشیو گزارش‌ها</h3><div class="filters"><input id="q" placeholder="جست‌وجوی عنوان، مداح یا سخنران..."><select id="style"><option value="">سبک</option><option>سخنرانی</option><option>روضه</option><option>زمینه</option><option>تک</option><option>شور</option></select><select id="event"><option value="">سبک مراسم</option><option>عزاداری</option><option>مولودی</option></select><select id="year"><option value="">سال</option><option>۱۴۰۵</option></select><select id="reciter"><option value="">مداح</option><option>کربلایی مسعود یوسفی جو</option></select><select id="speaker"><option value="">سخنران</option><option>حجت‌الاسلام سید امیر سید علیخانی</option></select></div><div class="grid" id="grid"></div></section>
+<section id="channels" class="channels"><h3>کانال‌های رسمی هیئت جنت الحسن</h3><div><a href="#" onclick="return false">بله | @jannatolhasan_a</a><a href="#" onclick="return false">ایتا | @jannatolhasan_a</a></div></section>
+<section id="admin" class="adminbox"><h3>🔐 پنل مدیریت</h3><p>پنل مدیریت خصوصی است و در نسخه نهایی فقط پس از احراز هویت مدیر قابل دسترسی خواهد بود.</p></section></main><footer>هیئت جنت الحسن © ۱۴۰۵</footer><script src="app.js"></script></body></html>
