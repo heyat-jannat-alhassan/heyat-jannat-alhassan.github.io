@@ -4,85 +4,198 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
   "sb_publishable_iXUEv9XZJaoKODkeolKYew_u57cRf8W";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 const BUCKET = "media";
 const TABLE = "reports";
+const ADMIN_PIN = "8041";
 
-/* ---------------- MENU ---------------- */
+let allReports = [];
 
-const menuBtn = document.getElementById("menuBtn");
-const drawer = document.getElementById("drawer");
-const shade = document.getElementById("shade");
-const closeBtn = document.getElementById("closeBtn");
 
-function openMenu() {
+/* =========================
+   منوی سایت
+========================= */
+
+const menuBtn =
+  document.getElementById("menuBtn");
+
+const drawer =
+  document.getElementById("drawer");
+
+const shade =
+  document.getElementById("shade");
+
+const closeBtn =
+  document.getElementById("closeBtn");
+
+function openMenu(){
   drawer.classList.add("open");
   shade.classList.add("show");
 }
 
-function closeMenu() {
+function closeMenu(){
   drawer.classList.remove("open");
   shade.classList.remove("show");
 }
 
-menuBtn.addEventListener("click", openMenu);
-closeBtn.addEventListener("click", closeMenu);
-shade.addEventListener("click", closeMenu);
+menuBtn.addEventListener("click",openMenu);
+closeBtn.addEventListener("click",closeMenu);
+shade.addEventListener("click",closeMenu);
 
-/* ---------------- ADMIN ---------------- */
 
-const guideBtn = document.getElementById("guideBtn");
-const adminOverlay = document.getElementById("adminOverlay");
-const adminClose = document.getElementById("adminClose");
+/* =========================
+   راهنما / پنل
+========================= */
 
-guideBtn.addEventListener("click", (e) => {
+const guideBtn =
+  document.getElementById("guideBtn");
+
+const adminOverlay =
+  document.getElementById("adminOverlay");
+
+const adminClose =
+  document.getElementById("adminClose");
+
+guideBtn.addEventListener("click",(e)=>{
   e.preventDefault();
   closeMenu();
   adminOverlay.classList.add("show");
 });
 
-adminClose.addEventListener("click", () => {
+adminClose.addEventListener("click",()=>{
   adminOverlay.classList.remove("show");
 });
 
-/* ---------------- AUDIO ARCHIVE ---------------- */
 
-const audioGrid = document.getElementById("audioGrid");
-const searchInput = document.getElementById("searchInput");
-const styleFilter = document.getElementById("styleFilter");
-const typeFilter = document.getElementById("typeFilter");
+/* =========================
+   ورود
+========================= */
 
-let allReports = [];
+const pinInput =
+  document.getElementById("pinInput");
 
-async function loadReports() {
+const loginBtn =
+  document.getElementById("loginBtn");
+
+const loginError =
+  document.getElementById("loginError");
+
+const loginBox =
+  document.getElementById("loginBox");
+
+const adminContent =
+  document.getElementById("adminContent");
+
+function login(){
+
+  if(pinInput.value === ADMIN_PIN){
+
+    loginBox.classList.add("hidden");
+    adminContent.classList.remove("hidden");
+
+    loginError.textContent = "";
+
+    loadManageList();
+
+  }else{
+
+    loginError.textContent =
+      "رمز ورود اشتباه است.";
+
+    pinInput.value = "";
+  }
+}
+
+loginBtn.addEventListener("click",login);
+
+pinInput.addEventListener("keydown",(e)=>{
+  if(e.key === "Enter"){
+    login();
+  }
+});
+
+
+/* =========================
+   آرشیو
+========================= */
+
+const audioGrid =
+  document.getElementById("audioGrid");
+
+const latestRow =
+  document.getElementById("latestRow");
+
+const searchInput =
+  document.getElementById("searchInput");
+
+const styleFilter =
+  document.getElementById("styleFilter");
+
+const typeFilter =
+  document.getElementById("typeFilter");
+
+
+async function loadReports(){
 
   audioGrid.innerHTML =
     '<div class="loading">در حال دریافت آرشیو...</div>';
 
-  const { data, error } = await supabaseClient
-    .from(TABLE)
-    .select("*")
-    .order("created_at", { ascending: false });
+  const {data,error} =
+    await supabaseClient
+      .from(TABLE)
+      .select("*")
+      .order("created_at",{ascending:false});
 
-  if (error) {
+  if(error){
+
     console.error(error);
 
     audioGrid.innerHTML =
       '<div class="loading">خطا در دریافت آرشیو</div>';
+
+    latestRow.innerHTML =
+      '<div class="loading">خطا در دریافت آخرین جلسه</div>';
 
     return;
   }
 
   allReports = data || [];
 
+  renderLatest();
   renderReports();
 }
 
-function renderReports() {
+
+function renderLatest(){
+
+  if(!allReports.length){
+
+    latestRow.innerHTML =
+      '<div class="loading">هنوز گزارشی ثبت نشده است.</div>';
+
+    return;
+  }
+
+  /* چند گزارش آخر به صورت افقی */
+  const latest =
+    allReports.slice(0,5);
+
+  latestRow.innerHTML = "";
+
+  latest.forEach(item=>{
+    latestRow.appendChild(
+      createAudioCard(item)
+    );
+  });
+}
+
+
+function renderReports(){
 
   const search =
     searchInput.value.trim().toLowerCase();
@@ -93,27 +206,31 @@ function renderReports() {
   const type =
     typeFilter.value;
 
-  const filtered = allReports.filter(item => {
+  const filtered =
+    allReports.filter(item=>{
 
-    const text = `
-      ${item.title || ""}
-      ${item.reciter || ""}
-      ${item.speaker || ""}
-    `.toLowerCase();
+      const text = `
+        ${item.title || ""}
+        ${item.reciter || ""}
+        ${item.speaker || ""}
+      `.toLowerCase();
 
-    const searchOK =
-      !search || text.includes(search);
+      const searchOK =
+        !search || text.includes(search);
 
-    const styleOK =
-      !style || item.style === style;
+      const styleOK =
+        !style || item.style === style;
 
-    const typeOK =
-      !type || item.event_type === type;
+      const typeOK =
+        !type || item.event_type === type;
 
-    return searchOK && styleOK && typeOK;
-  });
+      return searchOK &&
+             styleOK &&
+             typeOK;
+    });
 
-  if (!filtered.length) {
+
+  if(!filtered.length){
 
     audioGrid.innerHTML =
       '<div class="loading">فایلی در آرشیو پیدا نشد.</div>';
@@ -123,115 +240,106 @@ function renderReports() {
 
   audioGrid.innerHTML = "";
 
-  filtered.forEach(item => {
-
-    const card = document.createElement("article");
-    card.className = "card";
-
-    const tag =
-      item.style ||
-      item.event_type ||
-      "صوت";
-
-    const meta = [];
-
-    if (item.reciter)
-      meta.push(`مداح: ${escapeHTML(item.reciter)}`);
-
-    if (item.speaker)
-      meta.push(`سخنران: ${escapeHTML(item.speaker)}`);
-
-    card.innerHTML = `
-      <span class="tag">${escapeHTML(tag)}</span>
-
-      <h4>${escapeHTML(item.title)}</h4>
-
-      <div class="meta">
-        ${meta.join("<br>")}
-      </div>
-
-      <audio controls preload="none">
-        <source src="${item.audio_url}" type="audio/mpeg">
-      </audio>
-
-      <a
-        class="download"
-        href="${item.audio_url}"
-        download
-        target="_blank"
-      >
-        دانلود فایل MP3
-      </a>
-    `;
-
-    audioGrid.appendChild(card);
+  filtered.forEach(item=>{
+    audioGrid.appendChild(
+      createAudioCard(item)
+    );
   });
 }
 
-function escapeHTML(value) {
 
-  if (!value) return "";
+function createAudioCard(item){
 
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  const card =
+    document.createElement("article");
+
+  card.className = "card";
+
+  const tag =
+    item.style ||
+    item.event_type ||
+    "گزارش";
+
+  const performer =
+    item.reciter ||
+    item.speaker ||
+    "";
+
+  card.innerHTML = `
+
+    <span class="tag">
+      ${escapeHTML(tag)}
+    </span>
+
+    <h4>
+      ${escapeHTML(item.title)}
+    </h4>
+
+    <div class="meta">
+      ${performer
+        ? "مداح / سخنران: " +
+          escapeHTML(performer)
+        : ""}
+    </div>
+
+    <audio controls preload="none">
+      <source
+        src="${item.audio_url}"
+        type="audio/mpeg"
+      >
+    </audio>
+
+    <a
+      class="download"
+      href="${item.audio_url}"
+      download
+      target="_blank"
+      rel="noopener"
+    >
+      دانلود فایل MP3
+    </a>
+  `;
+
+  return card;
 }
 
-searchInput.addEventListener("input", renderReports);
-styleFilter.addEventListener("change", renderReports);
-typeFilter.addEventListener("change", renderReports);
 
-/* ---------------- ADMIN LOGIN ---------------- */
+searchInput.addEventListener(
+  "input",
+  renderReports
+);
 
-const pinInput = document.getElementById("pinInput");
-const loginBtn = document.getElementById("loginBtn");
-const loginError = document.getElementById("loginError");
-const loginBox = document.getElementById("loginBox");
-const adminContent = document.getElementById("adminContent");
+styleFilter.addEventListener(
+  "change",
+  renderReports
+);
 
-const ADMIN_PIN = "8041";
+typeFilter.addEventListener(
+  "change",
+  renderReports
+);
 
-loginBtn.addEventListener("click", login);
 
-pinInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    login();
-  }
-});
+/* =========================
+   آپلود MP3
+========================= */
 
-function login() {
+const audioFile =
+  document.getElementById("audioFile");
 
-  if (pinInput.value === ADMIN_PIN) {
+const fileName =
+  document.getElementById("fileName");
 
-    loginBox.classList.add("hidden");
-    adminContent.classList.remove("hidden");
+const uploadBtn =
+  document.getElementById("uploadBtn");
 
-    loginError.textContent = "";
+const uploadStatus =
+  document.getElementById("uploadStatus");
 
-    loadManageList();
 
-  } else {
+audioFile.addEventListener("change",()=>{
 
-    loginError.textContent =
-      "رمز ورود اشتباه است.";
-
-    pinInput.value = "";
-  }
-}
-
-/* ---------------- UPLOAD ---------------- */
-
-const audioFile = document.getElementById("audioFile");
-const fileName = document.getElementById("fileName");
-const uploadBtn = document.getElementById("uploadBtn");
-const uploadStatus = document.getElementById("uploadStatus");
-
-audioFile.addEventListener("change", () => {
-
-  if (!audioFile.files.length) {
+  if(!audioFile.files.length){
 
     fileName.textContent =
       "فایلی انتخاب نشده";
@@ -239,134 +347,280 @@ audioFile.addEventListener("change", () => {
     return;
   }
 
-  const file = audioFile.files[0];
+  const file =
+    audioFile.files[0];
 
   fileName.textContent =
     `${file.name} — ${formatBytes(file.size)}`;
 });
 
-uploadBtn.addEventListener("click", uploadAudio);
 
-async function uploadAudio() {
+uploadBtn.addEventListener(
+  "click",
+  uploadAudio
+);
 
-  const file = audioFile.files[0];
+
+async function uploadAudio(){
+
+  const file =
+    audioFile.files[0];
 
   const title =
-    document.getElementById("titleInput").value.trim();
+    document
+      .getElementById("titleInput")
+      .value.trim();
 
-  const reciter =
-    document.getElementById("reciterInput").value.trim();
-
-  const speaker =
-    document.getElementById("speakerInput").value.trim();
+  const performer =
+    document
+      .getElementById("performerInput")
+      .value.trim();
 
   const style =
-    document.getElementById("styleInput").value;
+    document
+      .getElementById("styleInput")
+      .value;
 
   const eventType =
-    document.getElementById("typeInput").value;
+    document
+      .getElementById("typeInput")
+      .value;
 
-  if (!file) {
-    uploadStatus.textContent =
-      "اول فایل MP3 را انتخاب کن.";
+
+  if(!file){
+
+    setStatus(
+      "اول فایل MP3 را انتخاب کن.",
+      true
+    );
+
     return;
   }
 
-  if (!file.name.toLowerCase().endsWith(".mp3")) {
-    uploadStatus.textContent =
-      "فقط فایل MP3 قابل آپلود است.";
+
+  if(!file.name.toLowerCase().endsWith(".mp3")){
+
+    setStatus(
+      "فقط فایل MP3 قابل آپلود است.",
+      true
+    );
+
     return;
   }
 
-  if (!title) {
-    uploadStatus.textContent =
-      "عنوان فایل را وارد کن.";
+
+  if(!title){
+
+    setStatus(
+      "عنوان را وارد کن.",
+      true
+    );
+
     return;
   }
+
+
+  if(!style){
+
+    setStatus(
+      "سبک را انتخاب کن.",
+      true
+    );
+
+    return;
+  }
+
+
+  if(!eventType){
+
+    setStatus(
+      "مناسبت را انتخاب کن.",
+      true
+    );
+
+    return;
+  }
+
 
   uploadBtn.disabled = true;
-  uploadBtn.textContent = "در حال آپلود...";
-  uploadStatus.textContent = "لطفاً صبر کن...";
+  uploadBtn.textContent =
+    "در حال آپلود...";
 
-  try {
+  setStatus(
+    "در حال انتقال فایل به سرور..."
+  );
 
-    const safeName =
-      file.name
-        .replace(/[^a-zA-Z0-9._-]/g, "-")
-        .toLowerCase();
+
+  try{
+
+    /*
+      نام فایل را انگلیسی می‌کنیم
+      تا مشکل حروف فارسی در Storage
+      ایجاد نشود.
+    */
+
+    const extension = "mp3";
+
+    const randomPart =
+      Math.random()
+        .toString(36)
+        .substring(2,10);
 
     const filePath =
-      `audio/${Date.now()}-${safeName}`;
+      `audio/${Date.now()}-${randomPart}.${extension}`;
 
-    const { error: uploadError } =
+
+    /*
+      آپلود مستقیم به Storage
+    */
+
+    const {error:uploadError} =
       await supabaseClient
         .storage
         .from(BUCKET)
-        .upload(filePath, file, {
-          cacheControl: "3600",
-          upsert: false,
-          contentType: "audio/mpeg"
-        });
+        .upload(
+          filePath,
+          file,
+          {
+            cacheControl:"3600",
+            upsert:false,
+            contentType:"audio/mpeg"
+          }
+        );
 
-    if (uploadError) {
-      throw uploadError;
+
+    if(uploadError){
+
+      console.error(
+        "Storage upload error:",
+        uploadError
+      );
+
+      throw new Error(
+        "خطای آپلود فایل: " +
+        uploadError.message
+      );
     }
 
-    const { data: publicData } =
+
+    /*
+      گرفتن لینک عمومی فایل
+    */
+
+    const {data:publicData} =
       supabaseClient
         .storage
         .from(BUCKET)
         .getPublicUrl(filePath);
 
+
     const audioUrl =
       publicData.publicUrl;
 
-    const { error: dbError } =
+
+    /*
+      چون جدول قبلی ستون reciter دارد،
+      نام مداح / سخنران را در همان ستون
+      ذخیره می‌کنیم تا لازم نباشد جدول
+      قبلی را دوباره بسازیم.
+    */
+
+    const {error:dbError} =
       await supabaseClient
         .from(TABLE)
         .insert({
-          title,
-          reciter: reciter || null,
-          speaker: speaker || null,
-          style: style || null,
-          event_type: eventType || null,
-          audio_url: audioUrl
+          title:title,
+          reciter:performer || null,
+          speaker:null,
+          style:style,
+          event_type:eventType,
+          audio_url:audioUrl
         });
 
-    if (dbError) {
-      throw dbError;
+
+    if(dbError){
+
+      console.error(
+        "Database error:",
+        dbError
+      );
+
+      /*
+        اگر فایل آپلود شده ولی ثبت اطلاعات
+        خطا داد، خود فایل را هم پاک می‌کنیم.
+      */
+
+      await supabaseClient
+        .storage
+        .from(BUCKET)
+        .remove([filePath]);
+
+      throw new Error(
+        "فایل آپلود شد ولی ثبت اطلاعات انجام نشد: " +
+        dbError.message
+      );
     }
 
-    uploadStatus.textContent =
-      "فایل با موفقیت آپلود شد.";
+
+    setStatus(
+      "✅ فایل با موفقیت آپلود و ثبت شد."
+    );
 
     clearForm();
 
     await loadReports();
     await loadManageList();
 
-  } catch (error) {
+
+  }catch(error){
 
     console.error(error);
 
-    uploadStatus.textContent =
-      "خطا در آپلود: " +
-      (error.message || "خطای نامشخص");
+    setStatus(
+      error.message ||
+      "خطای نامشخص هنگام آپلود",
+      true
+    );
 
-  } finally {
+  }finally{
 
     uploadBtn.disabled = false;
-    uploadBtn.textContent = "آپلود فایل";
+
+    uploadBtn.textContent =
+      "آپلود فایل";
   }
 }
 
-function clearForm() {
 
-  document.getElementById("titleInput").value = "";
-  document.getElementById("reciterInput").value = "";
-  document.getElementById("speakerInput").value = "";
-  document.getElementById("styleInput").value = "";
-  document.getElementById("typeInput").value = "";
+function setStatus(message,isError=false){
+
+  uploadStatus.textContent =
+    message;
+
+  uploadStatus.style.color =
+    isError
+      ? "#e57373"
+      : "#ffd400";
+}
+
+
+function clearForm(){
+
+  document
+    .getElementById("titleInput")
+    .value = "";
+
+  document
+    .getElementById("performerInput")
+    .value = "";
+
+  document
+    .getElementById("styleInput")
+    .value = "";
+
+  document
+    .getElementById("typeInput")
+    .value = "";
 
   audioFile.value = "";
 
@@ -374,32 +628,42 @@ function clearForm() {
     "فایلی انتخاب نشده";
 }
 
-/* ---------------- MANAGE ---------------- */
+
+/* =========================
+   مدیریت فایل‌ها
+========================= */
 
 const manageList =
   document.getElementById("manageList");
 
-async function loadManageList() {
 
-  const { data, error } =
+async function loadManageList(){
+
+  const {data,error} =
     await supabaseClient
       .from(TABLE)
       .select("*")
-      .order("created_at", {
-        ascending: false
-      });
+      .order(
+        "created_at",
+        {ascending:false}
+      );
 
-  if (error) {
+
+  if(error){
 
     manageList.innerHTML =
-      `<div class="error">${escapeHTML(error.message)}</div>`;
+      `<div class="error">
+        ${escapeHTML(error.message)}
+      </div>`;
 
     return;
   }
 
+
   manageList.innerHTML = "";
 
-  if (!data || !data.length) {
+
+  if(!data || !data.length){
 
     manageList.innerHTML =
       '<div class="loading">هنوز فایلی وجود ندارد.</div>';
@@ -407,7 +671,8 @@ async function loadManageList() {
     return;
   }
 
-  data.forEach(item => {
+
+  data.forEach(item=>{
 
     const div =
       document.createElement("div");
@@ -415,9 +680,31 @@ async function loadManageList() {
     div.className =
       "manage-item";
 
+    const performer =
+      item.reciter ||
+      item.speaker ||
+      "";
+
     div.innerHTML = `
+
       <div class="manage-title">
-        ${escapeHTML(item.title)}
+        <strong>
+          ${escapeHTML(item.title)}
+        </strong>
+
+        <br>
+
+        ${escapeHTML(
+          performer
+            ? "مداح / سخنران: " + performer
+            : ""
+        )}
+
+        <br>
+
+        ${escapeHTML(item.style || "")}
+        -
+        ${escapeHTML(item.event_type || "")}
       </div>
 
       <button
@@ -432,28 +719,38 @@ async function loadManageList() {
     manageList.appendChild(div);
   });
 
+
   document
     .querySelectorAll(".delete")
-    .forEach(btn => {
+    .forEach(btn=>{
 
       btn.addEventListener(
         "click",
-        () => deleteAudio(
-          btn.dataset.id,
-          decodeURIComponent(btn.dataset.url)
-        )
+        ()=>{
+          deleteAudio(
+            btn.dataset.id,
+            decodeURIComponent(
+              btn.dataset.url
+            )
+          );
+        }
       );
 
     });
 }
 
-async function deleteAudio(id, audioUrl) {
 
-  if (!confirm("این فایل حذف شود؟")) {
+async function deleteAudio(
+  id,
+  audioUrl
+){
+
+  if(!confirm("این فایل حذف شود؟")){
     return;
   }
 
-  try {
+
+  try{
 
     const marker =
       `/storage/v1/object/public/${BUCKET}/`;
@@ -461,33 +758,43 @@ async function deleteAudio(id, audioUrl) {
     const index =
       audioUrl.indexOf(marker);
 
-    if (index !== -1) {
+
+    if(index !== -1){
 
       const path =
         audioUrl.substring(
           index + marker.length
         );
 
-      await supabaseClient
-        .storage
-        .from(BUCKET)
-        .remove([path]);
+      const {error:storageError} =
+        await supabaseClient
+          .storage
+          .from(BUCKET)
+          .remove([path]);
+
+      if(storageError){
+        throw storageError;
+      }
     }
 
-    const { error } =
+
+    const {error} =
       await supabaseClient
         .from(TABLE)
         .delete()
-        .eq("id", id);
+        .eq("id",id);
 
-    if (error) {
+
+    if(error){
       throw error;
     }
+
 
     await loadReports();
     await loadManageList();
 
-  } catch (error) {
+
+  }catch(error){
 
     alert(
       "خطا در حذف فایل: " +
@@ -496,18 +803,34 @@ async function deleteAudio(id, audioUrl) {
   }
 }
 
-/* ---------------- HELPERS ---------------- */
 
-function formatBytes(bytes) {
+/* =========================
+   ابزارها
+========================= */
 
-  if (!bytes) return "0 B";
+function escapeHTML(value){
 
-  const units = [
-    "B",
-    "KB",
-    "MB",
-    "GB"
-  ];
+  if(!value){
+    return "";
+  }
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+
+function formatBytes(bytes){
+
+  if(!bytes){
+    return "0 B";
+  }
+
+  const units =
+    ["B","KB","MB","GB"];
 
   const i =
     Math.floor(
@@ -516,13 +839,17 @@ function formatBytes(bytes) {
     );
 
   return (
-    (bytes / Math.pow(1024, i))
-      .toFixed(1) +
-    " " +
+    (bytes /
+      Math.pow(1024,i))
+      .toFixed(1)
+    + " " +
     units[i]
   );
 }
 
-/* شروع سایت */
+
+/* =========================
+   شروع
+========================= */
 
 loadReports();
