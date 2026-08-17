@@ -1,5 +1,6 @@
 const ADMIN_PASSWORD = "8041";
 
+
 const defaultReports = [
   {
     id: 1,
@@ -21,160 +22,95 @@ const defaultReports = [
   }
 ];
 
+
 let reports =
-  JSON.parse(localStorage.getItem("jannat_reports")) ||
-  defaultReports;
+  JSON.parse(
+    localStorage.getItem("jannat_reports")
+  ) || defaultReports;
 
 
 function saveReports() {
+
   localStorage.setItem(
     "jannat_reports",
     JSON.stringify(reports)
   );
+
 }
 
 
 function escapeHtml(text) {
+
   return String(text)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+
 }
 
 
 /* =========================
-   صفحه اصلی
+   منوی سه خط
 ========================= */
 
-function initHome() {
+const menuBtn =
+  document.getElementById("menuBtn");
 
-  const menuBtn = document.getElementById("menuBtn");
-  const drawer = document.getElementById("drawer");
-  const closeBtn = document.getElementById("close");
-  const shade = document.getElementById("shade");
+const drawer =
+  document.getElementById("drawer");
 
-  if (menuBtn && drawer) {
+const closeBtn =
+  document.getElementById("close");
 
-    menuBtn.onclick = function () {
-      drawer.classList.add("open");
-
-      if (shade) {
-        shade.classList.add("show");
-      }
-    };
-
-  }
-
-  function closeMenu() {
-
-    if (drawer) {
-      drawer.classList.remove("open");
-    }
-
-    if (shade) {
-      shade.classList.remove("show");
-    }
-
-  }
-
-  if (closeBtn) {
-    closeBtn.onclick = closeMenu;
-  }
-
-  if (shade) {
-    shade.onclick = closeMenu;
-  }
+const shade =
+  document.getElementById("shade");
 
 
-  document
-    .querySelectorAll(".drawer a")
-    .forEach(function (a) {
+if (menuBtn) {
 
-      a.addEventListener(
-        "click",
-        closeMenu
-      );
+  menuBtn.onclick = function () {
 
-    });
+    drawer.classList.add("open");
+    shade.classList.add("show");
 
+  };
 
-  renderFilters();
-  render();
+}
 
 
-  [
-    "q",
-    "style",
-    "event",
-    "year",
-    "reciter",
-    "speaker"
-  ].forEach(function (id) {
+function closeMenu() {
 
-    const element =
-      document.getElementById(id);
+  drawer.classList.remove("open");
+  shade.classList.remove("show");
 
-    if (!element) {
-      return;
-    }
+}
 
-    element.addEventListener(
-      "input",
-      render
-    );
 
-    element.addEventListener(
-      "change",
-      render
+if (closeBtn) {
+  closeBtn.onclick = closeMenu;
+}
+
+if (shade) {
+  shade.onclick = closeMenu;
+}
+
+
+document
+  .querySelectorAll(".drawer a")
+  .forEach(function (link) {
+
+    link.addEventListener(
+      "click",
+      closeMenu
     );
 
   });
 
 
-  const prev =
-    document.getElementById("prev");
-
-  const next =
-    document.getElementById("next");
-
-  const latestRow =
-    document.getElementById("latestRow");
-
-
-  if (prev && latestRow) {
-
-    prev.onclick = function () {
-
-      latestRow.scrollBy({
-        left: -300,
-        behavior: "smooth"
-      });
-
-    };
-
-  }
-
-
-  if (next && latestRow) {
-
-    next.onclick = function () {
-
-      latestRow.scrollBy({
-        left: 300,
-        behavior: "smooth"
-      });
-
-    };
-
-  }
-
-}
-
-
 /* =========================
-   فیلترها
+   نمایش فیلترها
 ========================= */
 
 function renderFilters() {
@@ -191,26 +127,25 @@ function renderFilters() {
   }
 
 
-  const reciters = [
-    ...new Set(
+  const reciters =
+    [...new Set(
       reports
         .map(x => x.reciter)
         .filter(Boolean)
-    )
-  ];
+    )];
 
 
-  const speakers = [
-    ...new Set(
+  const speakers =
+    [...new Set(
       reports
         .map(x => x.speaker)
         .filter(Boolean)
-    )
-  ];
+    )];
 
 
   reciter.innerHTML =
     '<option value="">مداح</option>' +
+
     reciters
       .map(
         x =>
@@ -221,6 +156,7 @@ function renderFilters() {
 
   speaker.innerHTML =
     '<option value="">سخنران</option>' +
+
     speakers
       .map(
         x =>
@@ -241,26 +177,30 @@ function reportCard(report) {
 
   if (report.audio) {
 
-    audio =
-      `<a
+    audio = `
+      <a
         class="play"
         href="${escapeHtml(report.audio)}"
-        target="_blank"
-      >
+        target="_blank">
+
         ▶ پخش صوت
-      </a>`;
+
+      </a>
+    `;
 
   } else {
 
-    audio =
-      `<span class="meta">
+    audio = `
+      <span class="meta">
         فایل صوتی هنوز اضافه نشده
-      </span>`;
+      </span>
+    `;
 
   }
 
 
   return `
+
     <article class="card">
 
       <h4>
@@ -286,7 +226,9 @@ function reportCard(report) {
       ${audio}
 
     </article>
+
   `;
+
 }
 
 
@@ -303,51 +245,31 @@ function render() {
     document.getElementById("latestRow");
 
 
-  if (!grid && !latestRow) {
-    return;
-  }
-
-
-  const qElement =
-    document.getElementById("q");
-
-  const styleElement =
-    document.getElementById("style");
-
-  const eventElement =
-    document.getElementById("event");
-
-  const reciterElement =
-    document.getElementById("reciter");
-
-  const speakerElement =
-    document.getElementById("speaker");
-
-
   const q =
-    qElement
-      ? qElement.value.trim().toLowerCase()
-      : "";
+    document.getElementById("q")
+      ?.value
+      .trim()
+      .toLowerCase() || "";
+
 
   const style =
-    styleElement
-      ? styleElement.value
-      : "";
+    document.getElementById("style")
+      ?.value || "";
+
 
   const event =
-    eventElement
-      ? eventElement.value
-      : "";
+    document.getElementById("event")
+      ?.value || "";
+
 
   const reciter =
-    reciterElement
-      ? reciterElement.value
-      : "";
+    document.getElementById("reciter")
+      ?.value || "";
+
 
   const speaker =
-    speakerElement
-      ? speakerElement.value
-      : "";
+    document.getElementById("speaker")
+      ?.value || "";
 
 
   const filtered =
@@ -359,11 +281,17 @@ function render() {
 
 
       return (
+
         (!q || text.includes(q)) &&
+
         (!style || r.style === style) &&
+
         (!event || r.event === event) &&
+
         (!reciter || r.reciter === reciter) &&
+
         (!speaker || r.speaker === speaker)
+
       );
 
     });
@@ -373,10 +301,16 @@ function render() {
 
     grid.innerHTML =
       filtered.length
-        ? filtered.map(reportCard).join("")
-        : `<div class="empty">
-             گزارشی پیدا نشد.
-           </div>`;
+
+        ? filtered
+            .map(reportCard)
+            .join("")
+
+        : `
+          <div class="empty">
+            گزارشی پیدا نشد.
+          </div>
+        `;
 
   }
 
@@ -397,80 +331,163 @@ function render() {
 
 
 /* =========================
-   پنل مدیریت
+   فیلترها
 ========================= */
 
-function initAdminPanel() {
+[
+  "q",
+  "style",
+  "event",
+  "year",
+  "reciter",
+  "speaker"
 
-  const loginBox =
-    document.getElementById("loginBox");
+].forEach(function (id) {
 
-  const panelBox =
-    document.getElementById("panelBox");
-
-  const loginBtn =
-    document.getElementById("loginBtn");
-
-  const logoutBtn =
-    document.getElementById("logoutBtn");
-
-  const password =
-    document.getElementById("adminPassword");
-
-  const loginError =
-    document.getElementById("loginError");
+  const element =
+    document.getElementById(id);
 
 
-  if (
-    !loginBox ||
-    !panelBox ||
-    !loginBtn ||
-    !password
-  ) {
-
+  if (!element) {
     return;
-
   }
 
 
-  function showAdmin() {
-
-    loginBox.classList.add("hidden");
-
-    panelBox.classList.remove("hidden");
-
-    renderManage();
-
-  }
+  element.addEventListener(
+    "input",
+    render
+  );
 
 
-  function showLogin() {
+  element.addEventListener(
+    "change",
+    render
+  );
 
-    loginBox.classList.remove("hidden");
-
-    panelBox.classList.add("hidden");
-
-    password.value = "";
-
-  }
+});
 
 
-  if (
-    sessionStorage.getItem(
-      "admin_logged"
-    ) === "yes"
-  ) {
+/* =========================
+   دکمه‌های آخرین گزارش‌ها
+========================= */
 
-    showAdmin();
+const latestRow =
+  document.getElementById(
+    "latestRow"
+  );
 
-  }
 
+const prev =
+  document.getElementById("prev");
+
+
+const next =
+  document.getElementById("next");
+
+
+if (prev && latestRow) {
+
+  prev.onclick = function () {
+
+    latestRow.scrollBy({
+      left: -300,
+      behavior: "smooth"
+    });
+
+  };
+
+}
+
+
+if (next && latestRow) {
+
+  next.onclick = function () {
+
+    latestRow.scrollBy({
+      left: 300,
+      behavior: "smooth"
+    });
+
+  };
+
+}
+
+
+/* =========================
+   ورود مدیریت
+========================= */
+
+const loginBtn =
+  document.getElementById(
+    "loginBtn"
+  );
+
+
+const adminPassword =
+  document.getElementById(
+    "adminPassword"
+  );
+
+
+const loginError =
+  document.getElementById(
+    "loginError"
+  );
+
+
+const adminPanel =
+  document.getElementById(
+    "adminPanel"
+  );
+
+
+const adminLogin =
+  document.getElementById(
+    "adminLogin"
+  );
+
+
+const logoutBtn =
+  document.getElementById(
+    "logoutBtn"
+  );
+
+
+function showAdmin() {
+
+  adminLogin.classList.add(
+    "hidden"
+  );
+
+  adminPanel.classList.remove(
+    "hidden"
+  );
+
+  renderManage();
+
+}
+
+
+function showLogin() {
+
+  adminPanel.classList.add(
+    "hidden"
+  );
+
+  adminLogin.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+if (loginBtn) {
 
   loginBtn.onclick =
     function () {
 
       if (
-        password.value ===
+        adminPassword.value ===
         ADMIN_PASSWORD
       ) {
 
@@ -483,6 +500,10 @@ function initAdminPanel() {
 
         showAdmin();
 
+        adminPanel.scrollIntoView({
+          behavior: "smooth"
+        });
+
       } else {
 
         loginError.textContent =
@@ -492,8 +513,12 @@ function initAdminPanel() {
 
     };
 
+}
 
-  password.addEventListener(
+
+if (adminPassword) {
+
+  adminPassword.addEventListener(
     "keydown",
     function (e) {
 
@@ -504,127 +529,149 @@ function initAdminPanel() {
     }
   );
 
-
-  if (logoutBtn) {
-
-    logoutBtn.onclick =
-      function () {
-
-        sessionStorage.removeItem(
-          "admin_logged"
-        );
-
-        showLogin();
-
-      };
-
-  }
+}
 
 
-  const addReport =
-    document.getElementById(
-      "addReport"
-    );
+if (
+  sessionStorage.getItem(
+    "admin_logged"
+  ) === "yes"
+) {
+
+  showAdmin();
+
+}
 
 
-  if (addReport) {
+if (logoutBtn) {
 
-    addReport.onclick =
-      function () {
+  logoutBtn.onclick =
+    function () {
 
-        const title =
-          document
-            .getElementById("newTitle")
-            .value
-            .trim();
+      sessionStorage.removeItem(
+        "admin_logged"
+      );
 
+      showLogin();
 
-        if (!title) {
+      window.location.hash =
+        "home";
 
-          alert(
-            "لطفاً عنوان گزارش را وارد کنید."
-          );
-
-          return;
-
-        }
-
-
-        reports.push({
-
-          id: Date.now(),
-
-          title: title,
-
-          reciter:
-            document
-              .getElementById("newReciter")
-              .value
-              .trim(),
-
-          speaker:
-            document
-              .getElementById("newSpeaker")
-              .value
-              .trim(),
-
-          style:
-            document
-              .getElementById("newStyle")
-              .value,
-
-          event:
-            document
-              .getElementById("newEvent")
-              .value,
-
-          audio:
-            document
-              .getElementById("newAudio")
-              .value
-              .trim()
-
-        });
-
-
-        saveReports();
-
-        [
-          "newTitle",
-          "newReciter",
-          "newSpeaker",
-          "newStyle",
-          "newEvent",
-          "newAudio"
-        ].forEach(function (id) {
-
-          const element =
-            document.getElementById(id);
-
-          if (element) {
-            element.value = "";
-          }
-
-        });
-
-
-        render();
-
-        renderManage();
-
-        alert(
-          "گزارش با موفقیت اضافه شد."
-        );
-
-      };
-
-  }
+    };
 
 }
 
 
 /* =========================
-   لیست مدیریت
+   افزودن گزارش
+========================= */
+
+const addReport =
+  document.getElementById(
+    "addReport"
+  );
+
+
+if (addReport) {
+
+  addReport.onclick =
+    function () {
+
+      const title =
+        document
+          .getElementById("newTitle")
+          .value
+          .trim();
+
+
+      if (!title) {
+
+        alert(
+          "لطفاً عنوان گزارش را وارد کنید."
+        );
+
+        return;
+
+      }
+
+
+      reports.push({
+
+        id: Date.now(),
+
+        title: title,
+
+        reciter:
+          document
+            .getElementById("newReciter")
+            .value
+            .trim(),
+
+        speaker:
+          document
+            .getElementById("newSpeaker")
+            .value
+            .trim(),
+
+        style:
+          document
+            .getElementById("newStyle")
+            .value,
+
+        event:
+          document
+            .getElementById("newEvent")
+            .value,
+
+        audio:
+          document
+            .getElementById("newAudio")
+            .value
+            .trim()
+
+      });
+
+
+      saveReports();
+
+      renderFilters();
+
+      render();
+
+      renderManage();
+
+
+      [
+        "newTitle",
+        "newReciter",
+        "newSpeaker",
+        "newStyle",
+        "newEvent",
+        "newAudio"
+
+      ].forEach(function (id) {
+
+        const element =
+          document.getElementById(id);
+
+        if (element) {
+          element.value = "";
+        }
+
+      });
+
+
+      alert(
+        "گزارش با موفقیت اضافه شد."
+      );
+
+    };
+
+}
+
+
+/* =========================
+   مدیریت گزارش‌ها
 ========================= */
 
 function renderManage() {
@@ -643,9 +690,11 @@ function renderManage() {
   if (reports.length === 0) {
 
     list.innerHTML =
-      `<p class="empty">
-        گزارشی وجود ندارد.
-      </p>`;
+      `
+        <p class="empty">
+          گزارشی وجود ندارد.
+        </p>
+      `;
 
     return;
 
@@ -657,6 +706,7 @@ function renderManage() {
       .map(function (r) {
 
         return `
+
           <div class="manage-item">
 
             <div>
@@ -666,21 +716,26 @@ function renderManage() {
               </strong>
 
               <div class="meta">
+
                 ${escapeHtml(
                   r.reciter || "-"
                 )}
+
               </div>
 
             </div>
 
+
             <button
               class="delete"
-              onclick="deleteReport(${r.id})"
-            >
+              onclick="deleteReport(${r.id})">
+
               حذف
+
             </button>
 
           </div>
+
         `;
 
       })
@@ -688,10 +743,6 @@ function renderManage() {
 
 }
 
-
-/* =========================
-   حذف گزارش
-========================= */
 
 window.deleteReport =
   function (id) {
@@ -701,9 +752,7 @@ window.deleteReport =
         "این گزارش حذف شود؟"
       )
     ) {
-
       return;
-
     }
 
 
@@ -715,6 +764,8 @@ window.deleteReport =
 
     saveReports();
 
+    renderFilters();
+
     render();
 
     renderManage();
@@ -722,11 +773,6 @@ window.deleteReport =
   };
 
 
-/* اجرای صفحه */
-if (
-  document.getElementById("menuBtn")
-) {
+renderFilters();
 
-  initHome();
-
-}
+render();
