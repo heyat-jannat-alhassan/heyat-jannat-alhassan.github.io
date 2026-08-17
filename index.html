@@ -1,131 +1,204 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>پنل مدیریت | هیئت جنت الحسن</title>
+
+  <title>هیئت جنت الحسن | آرشیو صوتی</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<main class="admin-page">
+<header class="top">
 
-  <section class="adminbox">
+  <button
+    class="menu"
+    id="menuBtn"
+    aria-label="منوی سایت">
+    ☰
+  </button>
 
-    <div id="loginBox">
+  <div class="brand">
 
-      <h2>🔐 ورود مدیریت</h2>
+    <h1>هیئت جنت الحسن</h1>
 
-      <p>
-        این بخش فقط برای مدیر سایت است.
-      </p>
+    <p>
+      آرشیو گزارش‌های صوتی
+    </p>
 
-      <input
-        type="password"
-        id="adminPassword"
-        placeholder="رمز مدیریت"
-        autocomplete="current-password"
-      >
+  </div>
 
-      <button class="primary admin-btn" id="loginBtn">
-        ورود
+</header>
+
+
+<!-- منوی سه خط -->
+
+<div
+  class="drawer"
+  id="drawer">
+
+  <button
+    class="close"
+    id="close">
+    ×
+  </button>
+
+  <h2>
+    منوی سایت
+  </h2>
+
+  <a href="#home">
+    خانه
+  </a>
+
+  <a href="#latest">
+    آخرین گزارش‌ها
+  </a>
+
+  <a href="#archive">
+    آرشیو صوتی
+  </a>
+
+  <a href="#channels">
+    کانال‌های هیئت
+  </a>
+
+</div>
+
+
+<div
+  class="shade"
+  id="shade">
+</div>
+
+
+<main id="home">
+
+
+<!-- معرفی سایت -->
+
+<section class="hero">
+
+  <span>
+    شروع آرشیو: محرم ۱۴۰۵
+  </span>
+
+  <h2>
+
+    گزارش‌های صوتی
+
+    <br>
+
+    <b>
+      هیئت جنت الحسن
+    </b>
+
+  </h2>
+
+  <p>
+
+    آرشیوی مرتب، قابل جست‌وجو و ساده
+    برای پخش و دانلود گزارش‌های صوتی هیئت.
+
+  </p>
+
+  <a
+    class="primary"
+    href="#archive">
+
+    مشاهده آرشیو
+
+  </a>
+
+</section>
+
+
+<!-- آخرین گزارش‌ها -->
+
+<section
+  id="latest"
+  class="section">
+
+  <div class="head">
+
+    <div>
+
+      <small>
+        تازه‌ترین‌ها
+      </small>
+
+      <h3>
+        آخرین گزارش‌ها
+      </h3>
+
+    </div>
+
+
+    <div>
+
+      <button
+        class="arr"
+        id="prev">
+
+        ‹
+
       </button>
 
-      <p class="error" id="loginError"></p>
 
-      <a class="back-home" href="index.html">
-        ← بازگشت به سایت
-      </a>
+      <button
+        class="arr"
+        id="next">
 
-    </div>
+        ›
 
-
-    <div id="panelBox" class="hidden">
-
-      <div class="panel-head">
-
-        <div>
-          <small>مدیریت سایت</small>
-          <h2>پنل مدیریت</h2>
-        </div>
-
-        <button
-          id="logoutBtn"
-          class="logout"
-        >
-          خروج
-        </button>
-
-      </div>
-
-
-      <div class="form">
-
-        <input
-          id="newTitle"
-          placeholder="عنوان گزارش"
-        >
-
-        <input
-          id="newReciter"
-          placeholder="نام مداح"
-        >
-
-        <input
-          id="newSpeaker"
-          placeholder="نام سخنران"
-        >
-
-        <select id="newStyle">
-          <option value="">انتخاب سبک</option>
-          <option>سخنرانی</option>
-          <option>روضه</option>
-          <option>زمینه</option>
-          <option>تک</option>
-          <option>شور</option>
-        </select>
-
-        <select id="newEvent">
-          <option value="">انتخاب نوع مراسم</option>
-          <option>عزاداری</option>
-          <option>مولودی</option>
-        </select>
-
-        <input
-          id="newAudio"
-          placeholder="لینک فایل صوتی"
-        >
-
-        <button
-          class="primary"
-          id="addReport"
-        >
-          افزودن گزارش
-        </button>
-
-      </div>
-
-
-      <div class="manage">
-
-        <h3>گزارش‌های موجود</h3>
-
-        <div id="manageList"></div>
-
-      </div>
+      </button>
 
     </div>
 
-  </section>
+  </div>
 
-</main>
 
-<script src="app.js"></script>
+  <div
+    class="row"
+    id="latestRow">
 
-<script>
-  initAdminPanel();
-</script>
+  </div>
 
-</body>
-</html>
+</section>
+
+
+<!-- آرشیو -->
+
+<section
+  id="archive"
+  class="section">
+
+  <small>
+    محرم ۱۴۰۵ به بعد
+  </small>
+
+  <h3>
+    آرشیو گزارش‌ها
+  </h3>
+
+
+  <div class="filters">
+
+
+    <input
+      id="q"
+      placeholder="جست‌وجوی عنوان، مداح یا سخنران...">
+
+
+    <select id="style">
+
+      <option value="">
+        سبک
+      </option>
+
+      <option>
+        سخنرانی
+      </option
