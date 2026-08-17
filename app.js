@@ -1,45 +1,178 @@
-const ADMIN_PASSWORD = "8041";
+const SUPABASE_URL =
+  "https://sykieuggwndbhshvsaqo.supabase.co";
 
-const defaultReports = [
-  {
-    id: 1,
-    title: "گزارش مراسم محرم",
-    reciter: "کربلایی مسعود یوسفی جو",
-    speaker: "حجت‌الاسلام سید امیر سید علیخانی",
-    style: "روضه",
-    event: "عزاداری",
-    audio: ""
-  },
-  {
-    id: 2,
-    title: "گزارش شب عزاداری",
-    reciter: "کربلایی مسعود یوسفی جو",
-    speaker: "حجت‌الاسلام سید امیر سید علیخانی",
-    style: "شور",
-    event: "عزاداری",
-    audio: ""
-  }
-];
+const SUPABASE_KEY =
+  "sb_publishable_iXUEv9XZJaoKODkeolKYew_u57cRf8W";
 
-let reports =
-  JSON.parse(localStorage.getItem("jannat_reports")) ||
-  defaultReports;
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
+const BUCKET = "media";
+const TABLE = "reports";
 
-/* ذخیره */
+/* ---------------- MENU ---------------- */
 
-function saveReports() {
-  localStorage.setItem(
-    "jannat_reports",
-    JSON.stringify(reports)
-  );
+const menuBtn = document.getElementById("menuBtn");
+const drawer = document.getElementById("drawer");
+const shade = document.getElementById("shade");
+const closeBtn = document.getElementById("closeBtn");
+
+function openMenu() {
+  drawer.classList.add("open");
+  shade.classList.add("show");
 }
 
+function closeMenu() {
+  drawer.classList.remove("open");
+  shade.classList.remove("show");
+}
 
-/* جلوگیری از خراب شدن HTML */
+menuBtn.addEventListener("click", openMenu);
+closeBtn.addEventListener("click", closeMenu);
+shade.addEventListener("click", closeMenu);
 
-function escapeHtml(text) {
-  return String(text)
+/* ---------------- ADMIN ---------------- */
+
+const guideBtn = document.getElementById("guideBtn");
+const adminOverlay = document.getElementById("adminOverlay");
+const adminClose = document.getElementById("adminClose");
+
+guideBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  closeMenu();
+  adminOverlay.classList.add("show");
+});
+
+adminClose.addEventListener("click", () => {
+  adminOverlay.classList.remove("show");
+});
+
+/* ---------------- AUDIO ARCHIVE ---------------- */
+
+const audioGrid = document.getElementById("audioGrid");
+const searchInput = document.getElementById("searchInput");
+const styleFilter = document.getElementById("styleFilter");
+const typeFilter = document.getElementById("typeFilter");
+
+let allReports = [];
+
+async function loadReports() {
+
+  audioGrid.innerHTML =
+    '<div class="loading">در حال دریافت آرشیو...</div>';
+
+  const { data, error } = await supabaseClient
+    .from(TABLE)
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+
+    audioGrid.innerHTML =
+      '<div class="loading">خطا در دریافت آرشیو</div>';
+
+    return;
+  }
+
+  allReports = data || [];
+
+  renderReports();
+}
+
+function renderReports() {
+
+  const search =
+    searchInput.value.trim().toLowerCase();
+
+  const style =
+    styleFilter.value;
+
+  const type =
+    typeFilter.value;
+
+  const filtered = allReports.filter(item => {
+
+    const text = `
+      ${item.title || ""}
+      ${item.reciter || ""}
+      ${item.speaker || ""}
+    `.toLowerCase();
+
+    const searchOK =
+      !search || text.includes(search);
+
+    const styleOK =
+      !style || item.style === style;
+
+    const typeOK =
+      !type || item.event_type === type;
+
+    return searchOK && styleOK && typeOK;
+  });
+
+  if (!filtered.length) {
+
+    audioGrid.innerHTML =
+      '<div class="loading">فایلی در آرشیو پیدا نشد.</div>';
+
+    return;
+  }
+
+  audioGrid.innerHTML = "";
+
+  filtered.forEach(item => {
+
+    const card = document.createElement("article");
+    card.className = "card";
+
+    const tag =
+      item.style ||
+      item.event_type ||
+      "صوت";
+
+    const meta = [];
+
+    if (item.reciter)
+      meta.push(`مداح: ${escapeHTML(item.reciter)}`);
+
+    if (item.speaker)
+      meta.push(`سخنران: ${escapeHTML(item.speaker)}`);
+
+    card.innerHTML = `
+      <span class="tag">${escapeHTML(tag)}</span>
+
+      <h4>${escapeHTML(item.title)}</h4>
+
+      <div class="meta">
+        ${meta.join("<br>")}
+      </div>
+
+      <audio controls preload="none">
+        <source src="${item.audio_url}" type="audio/mpeg">
+      </audio>
+
+      <a
+        class="download"
+        href="${item.audio_url}"
+        download
+        target="_blank"
+      >
+        دانلود فایل MP3
+      </a>
+    `;
+
+    audioGrid.appendChild(card);
+  });
+}
+
+function escapeHTML(value) {
+
+  if (!value) return "";
+
+  return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -47,653 +180,349 @@ function escapeHtml(text) {
     .replaceAll("'", "&#039;");
 }
 
+searchInput.addEventListener("input", renderReports);
+styleFilter.addEventListener("change", renderReports);
+typeFilter.addEventListener("change", renderReports);
 
-/* =========================
-   منوی سه خط
-========================= */
+/* ---------------- ADMIN LOGIN ---------------- */
 
-const menuBtn =
-  document.getElementById("menuBtn");
+const pinInput = document.getElementById("pinInput");
+const loginBtn = document.getElementById("loginBtn");
+const loginError = document.getElementById("loginError");
+const loginBox = document.getElementById("loginBox");
+const adminContent = document.getElementById("adminContent");
 
-const drawer =
-  document.getElementById("drawer");
+const ADMIN_PIN = "8041";
 
-const closeBtn =
-  document.getElementById("close");
+loginBtn.addEventListener("click", login);
 
-const shade =
-  document.getElementById("shade");
-
-
-if (menuBtn) {
-
-  menuBtn.onclick = function () {
-
-    drawer.classList.add("open");
-
-    shade.classList.add("show");
-
-  };
-
-}
-
-
-function closeMenu() {
-
-  drawer.classList.remove("open");
-
-  shade.classList.remove("show");
-
-}
-
-
-if (closeBtn) {
-  closeBtn.onclick = closeMenu;
-}
-
-if (shade) {
-  shade.onclick = closeMenu;
-}
-
-
-document
-  .querySelectorAll(".drawer a")
-  .forEach(function (link) {
-
-    link.addEventListener(
-      "click",
-      closeMenu
-    );
-
-  });
-
-
-/* =========================
-   فیلترها
-========================= */
-
-function renderFilters() {
-
-  const reciter =
-    document.getElementById("reciter");
-
-  const speaker =
-    document.getElementById("speaker");
-
-
-  if (!reciter || !speaker) {
-    return;
+pinInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    login();
   }
-
-
-  const reciters =
-    [...new Set(
-      reports
-        .map(x => x.reciter)
-        .filter(Boolean)
-    )];
-
-
-  const speakers =
-    [...new Set(
-      reports
-        .map(x => x.speaker)
-        .filter(Boolean)
-    )];
-
-
-  reciter.innerHTML =
-    '<option value="">مداح</option>' +
-    reciters.map(
-      x => `<option>${escapeHtml(x)}</option>`
-    ).join("");
-
-
-  speaker.innerHTML =
-    '<option value="">سخنران</option>' +
-    speakers.map(
-      x => `<option>${escapeHtml(x)}</option>`
-    ).join("");
-
-}
-
-
-/* =========================
-   کارت گزارش
-========================= */
-
-function reportCard(report) {
-
-  const audio =
-    report.audio
-
-      ? `
-        <a
-          class="play"
-          href="${escapeHtml(report.audio)}"
-          target="_blank">
-          ▶ پخش صوت
-        </a>
-      `
-
-      : `
-        <span class="meta">
-          فایل صوتی هنوز اضافه نشده
-        </span>
-      `;
-
-
-  return `
-
-    <article class="card">
-
-      <h4>
-        ${escapeHtml(report.title)}
-      </h4>
-
-      <div class="meta">
-        مداح:
-        ${escapeHtml(report.reciter || "-")}
-      </div>
-
-      <div class="meta">
-        سخنران:
-        ${escapeHtml(report.speaker || "-")}
-      </div>
-
-      <div class="meta">
-        ${escapeHtml(report.style || "-")}
-        |
-        ${escapeHtml(report.event || "-")}
-      </div>
-
-      ${audio}
-
-    </article>
-
-  `;
-
-}
-
-
-/* =========================
-   نمایش آرشیو
-========================= */
-
-function render() {
-
-  const grid =
-    document.getElementById("grid");
-
-  const latestRow =
-    document.getElementById("latestRow");
-
-
-  const q =
-    document.getElementById("q")?.value
-      .trim()
-      .toLowerCase() || "";
-
-
-  const style =
-    document.getElementById("style")?.value || "";
-
-
-  const event =
-    document.getElementById("event")?.value || "";
-
-
-  const reciter =
-    document.getElementById("reciter")?.value || "";
-
-
-  const speaker =
-    document.getElementById("speaker")?.value || "";
-
-
-  const filtered =
-    reports.filter(function (r) {
-
-      const text =
-        `${r.title} ${r.reciter} ${r.speaker}`
-          .toLowerCase();
-
-
-      return (
-
-        (!q || text.includes(q)) &&
-
-        (!style || r.style === style) &&
-
-        (!event || r.event === event) &&
-
-        (!reciter || r.reciter === reciter) &&
-
-        (!speaker || r.speaker === speaker)
-
-      );
-
-    });
-
-
-  if (grid) {
-
-    grid.innerHTML =
-      filtered.length
-
-        ? filtered.map(reportCard).join("")
-
-        : `
-          <div class="empty">
-            گزارشی پیدا نشد.
-          </div>
-        `;
-
-  }
-
-
-  if (latestRow) {
-
-    latestRow.innerHTML =
-      reports
-        .slice()
-        .reverse()
-        .slice(0, 3)
-        .map(reportCard)
-        .join("");
-
-  }
-
-}
-
-
-/* فیلترها */
-
-[
-  "q",
-  "style",
-  "event",
-  "year",
-  "reciter",
-  "speaker"
-
-].forEach(function (id) {
-
-  const element =
-    document.getElementById(id);
-
-
-  if (!element) {
-    return;
-  }
-
-
-  element.addEventListener(
-    "input",
-    render
-  );
-
-
-  element.addEventListener(
-    "change",
-    render
-  );
-
 });
 
+function login() {
 
-/* دکمه‌های آخرین گزارش‌ها */
+  if (pinInput.value === ADMIN_PIN) {
 
-const latestRow =
-  document.getElementById("latestRow");
+    loginBox.classList.add("hidden");
+    adminContent.classList.remove("hidden");
 
-const prev =
-  document.getElementById("prev");
+    loginError.textContent = "";
 
-const next =
-  document.getElementById("next");
+    loadManageList();
 
+  } else {
 
-if (prev && latestRow) {
+    loginError.textContent =
+      "رمز ورود اشتباه است.";
 
-  prev.onclick = function () {
-
-    latestRow.scrollBy({
-      left: -300,
-      behavior: "smooth"
-    });
-
-  };
-
+    pinInput.value = "";
+  }
 }
 
+/* ---------------- UPLOAD ---------------- */
 
-if (next && latestRow) {
+const audioFile = document.getElementById("audioFile");
+const fileName = document.getElementById("fileName");
+const uploadBtn = document.getElementById("uploadBtn");
+const uploadStatus = document.getElementById("uploadStatus");
 
-  next.onclick = function () {
+audioFile.addEventListener("change", () => {
 
-    latestRow.scrollBy({
-      left: 300,
-      behavior: "smooth"
-    });
+  if (!audioFile.files.length) {
 
-  };
+    fileName.textContent =
+      "فایلی انتخاب نشده";
 
+    return;
+  }
+
+  const file = audioFile.files[0];
+
+  fileName.textContent =
+    `${file.name} — ${formatBytes(file.size)}`;
+});
+
+uploadBtn.addEventListener("click", uploadAudio);
+
+async function uploadAudio() {
+
+  const file = audioFile.files[0];
+
+  const title =
+    document.getElementById("titleInput").value.trim();
+
+  const reciter =
+    document.getElementById("reciterInput").value.trim();
+
+  const speaker =
+    document.getElementById("speakerInput").value.trim();
+
+  const style =
+    document.getElementById("styleInput").value;
+
+  const eventType =
+    document.getElementById("typeInput").value;
+
+  if (!file) {
+    uploadStatus.textContent =
+      "اول فایل MP3 را انتخاب کن.";
+    return;
+  }
+
+  if (!file.name.toLowerCase().endsWith(".mp3")) {
+    uploadStatus.textContent =
+      "فقط فایل MP3 قابل آپلود است.";
+    return;
+  }
+
+  if (!title) {
+    uploadStatus.textContent =
+      "عنوان فایل را وارد کن.";
+    return;
+  }
+
+  uploadBtn.disabled = true;
+  uploadBtn.textContent = "در حال آپلود...";
+  uploadStatus.textContent = "لطفاً صبر کن...";
+
+  try {
+
+    const safeName =
+      file.name
+        .replace(/[^a-zA-Z0-9._-]/g, "-")
+        .toLowerCase();
+
+    const filePath =
+      `audio/${Date.now()}-${safeName}`;
+
+    const { error: uploadError } =
+      await supabaseClient
+        .storage
+        .from(BUCKET)
+        .upload(filePath, file, {
+          cacheControl: "3600",
+          upsert: false,
+          contentType: "audio/mpeg"
+        });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    const { data: publicData } =
+      supabaseClient
+        .storage
+        .from(BUCKET)
+        .getPublicUrl(filePath);
+
+    const audioUrl =
+      publicData.publicUrl;
+
+    const { error: dbError } =
+      await supabaseClient
+        .from(TABLE)
+        .insert({
+          title,
+          reciter: reciter || null,
+          speaker: speaker || null,
+          style: style || null,
+          event_type: eventType || null,
+          audio_url: audioUrl
+        });
+
+    if (dbError) {
+      throw dbError;
+    }
+
+    uploadStatus.textContent =
+      "فایل با موفقیت آپلود شد.";
+
+    clearForm();
+
+    await loadReports();
+    await loadManageList();
+
+  } catch (error) {
+
+    console.error(error);
+
+    uploadStatus.textContent =
+      "خطا در آپلود: " +
+      (error.message || "خطای نامشخص");
+
+  } finally {
+
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = "آپلود فایل";
+  }
 }
 
+function clearForm() {
 
-/* =========================
-   ورود مدیریت
-========================= */
+  document.getElementById("titleInput").value = "";
+  document.getElementById("reciterInput").value = "";
+  document.getElementById("speakerInput").value = "";
+  document.getElementById("styleInput").value = "";
+  document.getElementById("typeInput").value = "";
 
-const loginBtn =
-  document.getElementById("loginBtn");
+  audioFile.value = "";
 
-const password =
-  document.getElementById("adminPassword");
-
-const loginError =
-  document.getElementById("loginError");
-
-const loginBox =
-  document.getElementById("loginBox");
-
-const panelBox =
-  document.getElementById("panelBox");
-
-const logoutBtn =
-  document.getElementById("logoutBtn");
-
-
-function showAdmin() {
-
-  loginBox.classList.add("hidden");
-
-  panelBox.classList.remove("hidden");
-
-  renderManage();
-
+  fileName.textContent =
+    "فایلی انتخاب نشده";
 }
 
+/* ---------------- MANAGE ---------------- */
 
-function showLogin() {
+const manageList =
+  document.getElementById("manageList");
 
-  panelBox.classList.add("hidden");
+async function loadManageList() {
 
-  loginBox.classList.remove("hidden");
+  const { data, error } =
+    await supabaseClient
+      .from(TABLE)
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
 
-}
+  if (error) {
 
+    manageList.innerHTML =
+      `<div class="error">${escapeHTML(error.message)}</div>`;
 
-if (loginBtn) {
+    return;
+  }
 
-  loginBtn.onclick = function () {
+  manageList.innerHTML = "";
 
-    if (password.value === ADMIN_PASSWORD) {
+  if (!data || !data.length) {
 
-      sessionStorage.setItem(
-        "admin_logged",
-        "yes"
+    manageList.innerHTML =
+      '<div class="loading">هنوز فایلی وجود ندارد.</div>';
+
+    return;
+  }
+
+  data.forEach(item => {
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "manage-item";
+
+    div.innerHTML = `
+      <div class="manage-title">
+        ${escapeHTML(item.title)}
+      </div>
+
+      <button
+        class="delete"
+        data-id="${item.id}"
+        data-url="${encodeURIComponent(item.audio_url)}"
+      >
+        حذف
+      </button>
+    `;
+
+    manageList.appendChild(div);
+  });
+
+  document
+    .querySelectorAll(".delete")
+    .forEach(btn => {
+
+      btn.addEventListener(
+        "click",
+        () => deleteAudio(
+          btn.dataset.id,
+          decodeURIComponent(btn.dataset.url)
+        )
       );
 
-      loginError.textContent = "";
-
-      showAdmin();
-
-    }
-
-    else {
-
-      loginError.textContent =
-        "رمز مدیریت اشتباه است.";
-
-    }
-
-  };
-
-}
-
-
-if (password) {
-
-  password.addEventListener(
-    "keydown",
-    function (e) {
-
-      if (e.key === "Enter") {
-        loginBtn.click();
-      }
-
-    }
-  );
-
-}
-
-
-if (
-  sessionStorage.getItem(
-    "admin_logged"
-  ) === "yes"
-) {
-
-  showAdmin();
-
-}
-
-
-if (logoutBtn) {
-
-  logoutBtn.onclick = function () {
-
-    sessionStorage.removeItem(
-      "admin_logged"
-    );
-
-    showLogin();
-
-  };
-
-}
-
-
-/* =========================
-   افزودن گزارش
-========================= */
-
-const addReport =
-  document.getElementById("addReport");
-
-
-if (addReport) {
-
-  addReport.onclick = function () {
-
-    const title =
-      document
-        .getElementById("newTitle")
-        .value
-        .trim();
-
-
-    if (!title) {
-
-      alert(
-        "لطفاً عنوان گزارش را وارد کنید."
-      );
-
-      return;
-
-    }
-
-
-    reports.push({
-
-      id: Date.now(),
-
-      title: title,
-
-      reciter:
-        document
-          .getElementById("newReciter")
-          .value
-          .trim(),
-
-      speaker:
-        document
-          .getElementById("newSpeaker")
-          .value
-          .trim(),
-
-      style:
-        document
-          .getElementById("newStyle")
-          .value,
-
-      event:
-        document
-          .getElementById("newEvent")
-          .value,
-
-      audio:
-        document
-          .getElementById("newAudio")
-          .value
-          .trim()
-
     });
+}
 
+async function deleteAudio(id, audioUrl) {
 
-    saveReports();
+  if (!confirm("این فایل حذف شود؟")) {
+    return;
+  }
 
-    renderFilters();
+  try {
 
-    render();
+    const marker =
+      `/storage/v1/object/public/${BUCKET}/`;
 
-    renderManage();
+    const index =
+      audioUrl.indexOf(marker);
 
+    if (index !== -1) {
 
-    [
-      "newTitle",
-      "newReciter",
-      "newSpeaker",
-      "newStyle",
-      "newEvent",
-      "newAudio"
+      const path =
+        audioUrl.substring(
+          index + marker.length
+        );
 
-    ].forEach(function (id) {
+      await supabaseClient
+        .storage
+        .from(BUCKET)
+        .remove([path]);
+    }
 
-      document.getElementById(id).value = "";
+    const { error } =
+      await supabaseClient
+        .from(TABLE)
+        .delete()
+        .eq("id", id);
 
-    });
+    if (error) {
+      throw error;
+    }
 
+    await loadReports();
+    await loadManageList();
+
+  } catch (error) {
 
     alert(
-      "گزارش با موفقیت اضافه شد."
+      "خطا در حذف فایل: " +
+      error.message
+    );
+  }
+}
+
+/* ---------------- HELPERS ---------------- */
+
+function formatBytes(bytes) {
+
+  if (!bytes) return "0 B";
+
+  const units = [
+    "B",
+    "KB",
+    "MB",
+    "GB"
+  ];
+
+  const i =
+    Math.floor(
+      Math.log(bytes) /
+      Math.log(1024)
     );
 
-  };
-
+  return (
+    (bytes / Math.pow(1024, i))
+      .toFixed(1) +
+    " " +
+    units[i]
+  );
 }
 
+/* شروع سایت */
 
-/* =========================
-   لیست مدیریت
-========================= */
-
-function renderManage() {
-
-  const list =
-    document.getElementById("manageList");
-
-
-  if (!list) {
-    return;
-  }
-
-
-  if (reports.length === 0) {
-
-    list.innerHTML =
-      `
-        <p class="empty">
-          گزارشی وجود ندارد.
-        </p>
-      `;
-
-    return;
-
-  }
-
-
-  list.innerHTML =
-    reports.map(function (r) {
-
-      return `
-
-        <div class="manage-item">
-
-          <div>
-
-            <strong>
-              ${escapeHtml(r.title)}
-            </strong>
-
-            <div class="meta">
-              ${escapeHtml(r.reciter || "-")}
-            </div>
-
-          </div>
-
-          <button
-            class="delete"
-            onclick="deleteReport(${r.id})">
-
-            حذف
-
-          </button>
-
-        </div>
-
-      `;
-
-    }).join("");
-
-}
-
-
-/* حذف */
-
-window.deleteReport =
-  function (id) {
-
-    if (
-      !confirm(
-        "این گزارش حذف شود؟"
-      )
-    ) {
-      return;
-    }
-
-
-    reports =
-      reports.filter(
-        r => r.id !== id
-      );
-
-
-    saveReports();
-
-    renderFilters();
-
-    render();
-
-    renderManage();
-
-  };
-
-
-/* اجرا */
-
-renderFilters();
-
-render();
+loadReports();
