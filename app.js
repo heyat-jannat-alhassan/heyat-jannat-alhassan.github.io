@@ -1,6 +1,5 @@
 const ADMIN_PASSWORD = "8041";
 
-
 const defaultReports = [
   {
     id: 1,
@@ -22,32 +21,30 @@ const defaultReports = [
   }
 ];
 
-
 let reports =
-  JSON.parse(
-    localStorage.getItem("jannat_reports")
-  ) || defaultReports;
+  JSON.parse(localStorage.getItem("jannat_reports")) ||
+  defaultReports;
 
+
+/* ذخیره */
 
 function saveReports() {
-
   localStorage.setItem(
     "jannat_reports",
     JSON.stringify(reports)
   );
-
 }
 
 
-function escapeHtml(text) {
+/* جلوگیری از خراب شدن HTML */
 
+function escapeHtml(text) {
   return String(text)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
-
 }
 
 
@@ -73,6 +70,7 @@ if (menuBtn) {
   menuBtn.onclick = function () {
 
     drawer.classList.add("open");
+
     shade.classList.add("show");
 
   };
@@ -83,6 +81,7 @@ if (menuBtn) {
 function closeMenu() {
 
   drawer.classList.remove("open");
+
   shade.classList.remove("show");
 
 }
@@ -110,7 +109,7 @@ document
 
 
 /* =========================
-   نمایش فیلترها
+   فیلترها
 ========================= */
 
 function renderFilters() {
@@ -145,24 +144,16 @@ function renderFilters() {
 
   reciter.innerHTML =
     '<option value="">مداح</option>' +
-
-    reciters
-      .map(
-        x =>
-          `<option>${escapeHtml(x)}</option>`
-      )
-      .join("");
+    reciters.map(
+      x => `<option>${escapeHtml(x)}</option>`
+    ).join("");
 
 
   speaker.innerHTML =
     '<option value="">سخنران</option>' +
-
-    speakers
-      .map(
-        x =>
-          `<option>${escapeHtml(x)}</option>`
-      )
-      .join("");
+    speakers.map(
+      x => `<option>${escapeHtml(x)}</option>`
+    ).join("");
 
 }
 
@@ -173,30 +164,23 @@ function renderFilters() {
 
 function reportCard(report) {
 
-  let audio = "";
+  const audio =
+    report.audio
 
-  if (report.audio) {
+      ? `
+        <a
+          class="play"
+          href="${escapeHtml(report.audio)}"
+          target="_blank">
+          ▶ پخش صوت
+        </a>
+      `
 
-    audio = `
-      <a
-        class="play"
-        href="${escapeHtml(report.audio)}"
-        target="_blank">
-
-        ▶ پخش صوت
-
-      </a>
-    `;
-
-  } else {
-
-    audio = `
-      <span class="meta">
-        فایل صوتی هنوز اضافه نشده
-      </span>
-    `;
-
-  }
+      : `
+        <span class="meta">
+          فایل صوتی هنوز اضافه نشده
+        </span>
+      `;
 
 
   return `
@@ -246,30 +230,25 @@ function render() {
 
 
   const q =
-    document.getElementById("q")
-      ?.value
+    document.getElementById("q")?.value
       .trim()
       .toLowerCase() || "";
 
 
   const style =
-    document.getElementById("style")
-      ?.value || "";
+    document.getElementById("style")?.value || "";
 
 
   const event =
-    document.getElementById("event")
-      ?.value || "";
+    document.getElementById("event")?.value || "";
 
 
   const reciter =
-    document.getElementById("reciter")
-      ?.value || "";
+    document.getElementById("reciter")?.value || "";
 
 
   const speaker =
-    document.getElementById("speaker")
-      ?.value || "";
+    document.getElementById("speaker")?.value || "";
 
 
   const filtered =
@@ -302,9 +281,7 @@ function render() {
     grid.innerHTML =
       filtered.length
 
-        ? filtered
-            .map(reportCard)
-            .join("")
+        ? filtered.map(reportCard).join("")
 
         : `
           <div class="empty">
@@ -330,9 +307,7 @@ function render() {
 }
 
 
-/* =========================
-   فیلترها
-========================= */
+/* فیلترها */
 
 [
   "q",
@@ -367,19 +342,13 @@ function render() {
 });
 
 
-/* =========================
-   دکمه‌های آخرین گزارش‌ها
-========================= */
+/* دکمه‌های آخرین گزارش‌ها */
 
 const latestRow =
-  document.getElementById(
-    "latestRow"
-  );
-
+  document.getElementById("latestRow");
 
 const prev =
   document.getElementById("prev");
-
 
 const next =
   document.getElementById("next");
@@ -418,50 +387,29 @@ if (next && latestRow) {
 ========================= */
 
 const loginBtn =
-  document.getElementById(
-    "loginBtn"
-  );
+  document.getElementById("loginBtn");
 
-
-const adminPassword =
-  document.getElementById(
-    "adminPassword"
-  );
-
+const password =
+  document.getElementById("adminPassword");
 
 const loginError =
-  document.getElementById(
-    "loginError"
-  );
+  document.getElementById("loginError");
 
+const loginBox =
+  document.getElementById("loginBox");
 
-const adminPanel =
-  document.getElementById(
-    "adminPanel"
-  );
-
-
-const adminLogin =
-  document.getElementById(
-    "adminLogin"
-  );
-
+const panelBox =
+  document.getElementById("panelBox");
 
 const logoutBtn =
-  document.getElementById(
-    "logoutBtn"
-  );
+  document.getElementById("logoutBtn");
 
 
 function showAdmin() {
 
-  adminLogin.classList.add(
-    "hidden"
-  );
+  loginBox.classList.add("hidden");
 
-  adminPanel.classList.remove(
-    "hidden"
-  );
+  panelBox.classList.remove("hidden");
 
   renderManage();
 
@@ -470,55 +418,45 @@ function showAdmin() {
 
 function showLogin() {
 
-  adminPanel.classList.add(
-    "hidden"
-  );
+  panelBox.classList.add("hidden");
 
-  adminLogin.classList.remove(
-    "hidden"
-  );
+  loginBox.classList.remove("hidden");
 
 }
 
 
 if (loginBtn) {
 
-  loginBtn.onclick =
-    function () {
+  loginBtn.onclick = function () {
 
-      if (
-        adminPassword.value ===
-        ADMIN_PASSWORD
-      ) {
+    if (password.value === ADMIN_PASSWORD) {
 
-        sessionStorage.setItem(
-          "admin_logged",
-          "yes"
-        );
+      sessionStorage.setItem(
+        "admin_logged",
+        "yes"
+      );
 
-        loginError.textContent = "";
+      loginError.textContent = "";
 
-        showAdmin();
+      showAdmin();
 
-        adminPanel.scrollIntoView({
-          behavior: "smooth"
-        });
+    }
 
-      } else {
+    else {
 
-        loginError.textContent =
-          "رمز مدیریت اشتباه است.";
+      loginError.textContent =
+        "رمز مدیریت اشتباه است.";
 
-      }
+    }
 
-    };
+  };
 
 }
 
 
-if (adminPassword) {
+if (password) {
 
-  adminPassword.addEventListener(
+  password.addEventListener(
     "keydown",
     function (e) {
 
@@ -545,19 +483,15 @@ if (
 
 if (logoutBtn) {
 
-  logoutBtn.onclick =
-    function () {
+  logoutBtn.onclick = function () {
 
-      sessionStorage.removeItem(
-        "admin_logged"
-      );
+    sessionStorage.removeItem(
+      "admin_logged"
+    );
 
-      showLogin();
+    showLogin();
 
-      window.location.hash =
-        "home";
-
-    };
+  };
 
 }
 
@@ -567,119 +501,109 @@ if (logoutBtn) {
 ========================= */
 
 const addReport =
-  document.getElementById(
-    "addReport"
-  );
+  document.getElementById("addReport");
 
 
 if (addReport) {
 
-  addReport.onclick =
-    function () {
+  addReport.onclick = function () {
 
-      const title =
-        document
-          .getElementById("newTitle")
-          .value
-          .trim();
-
-
-      if (!title) {
-
-        alert(
-          "لطفاً عنوان گزارش را وارد کنید."
-        );
-
-        return;
-
-      }
+    const title =
+      document
+        .getElementById("newTitle")
+        .value
+        .trim();
 
 
-      reports.push({
-
-        id: Date.now(),
-
-        title: title,
-
-        reciter:
-          document
-            .getElementById("newReciter")
-            .value
-            .trim(),
-
-        speaker:
-          document
-            .getElementById("newSpeaker")
-            .value
-            .trim(),
-
-        style:
-          document
-            .getElementById("newStyle")
-            .value,
-
-        event:
-          document
-            .getElementById("newEvent")
-            .value,
-
-        audio:
-          document
-            .getElementById("newAudio")
-            .value
-            .trim()
-
-      });
-
-
-      saveReports();
-
-      renderFilters();
-
-      render();
-
-      renderManage();
-
-
-      [
-        "newTitle",
-        "newReciter",
-        "newSpeaker",
-        "newStyle",
-        "newEvent",
-        "newAudio"
-
-      ].forEach(function (id) {
-
-        const element =
-          document.getElementById(id);
-
-        if (element) {
-          element.value = "";
-        }
-
-      });
-
+    if (!title) {
 
       alert(
-        "گزارش با موفقیت اضافه شد."
+        "لطفاً عنوان گزارش را وارد کنید."
       );
 
-    };
+      return;
+
+    }
+
+
+    reports.push({
+
+      id: Date.now(),
+
+      title: title,
+
+      reciter:
+        document
+          .getElementById("newReciter")
+          .value
+          .trim(),
+
+      speaker:
+        document
+          .getElementById("newSpeaker")
+          .value
+          .trim(),
+
+      style:
+        document
+          .getElementById("newStyle")
+          .value,
+
+      event:
+        document
+          .getElementById("newEvent")
+          .value,
+
+      audio:
+        document
+          .getElementById("newAudio")
+          .value
+          .trim()
+
+    });
+
+
+    saveReports();
+
+    renderFilters();
+
+    render();
+
+    renderManage();
+
+
+    [
+      "newTitle",
+      "newReciter",
+      "newSpeaker",
+      "newStyle",
+      "newEvent",
+      "newAudio"
+
+    ].forEach(function (id) {
+
+      document.getElementById(id).value = "";
+
+    });
+
+
+    alert(
+      "گزارش با موفقیت اضافه شد."
+    );
+
+  };
 
 }
 
 
 /* =========================
-   مدیریت گزارش‌ها
+   لیست مدیریت
 ========================= */
 
 function renderManage() {
 
   const list =
-    document.getElementById(
-      "manageList"
-    );
+    document.getElementById("manageList");
 
 
   if (!list) {
@@ -702,47 +626,42 @@ function renderManage() {
 
 
   list.innerHTML =
-    reports
-      .map(function (r) {
+    reports.map(function (r) {
 
-        return `
+      return `
 
-          <div class="manage-item">
+        <div class="manage-item">
 
-            <div>
+          <div>
 
-              <strong>
-                ${escapeHtml(r.title)}
-              </strong>
+            <strong>
+              ${escapeHtml(r.title)}
+            </strong>
 
-              <div class="meta">
-
-                ${escapeHtml(
-                  r.reciter || "-"
-                )}
-
-              </div>
-
+            <div class="meta">
+              ${escapeHtml(r.reciter || "-")}
             </div>
-
-
-            <button
-              class="delete"
-              onclick="deleteReport(${r.id})">
-
-              حذف
-
-            </button>
 
           </div>
 
-        `;
+          <button
+            class="delete"
+            onclick="deleteReport(${r.id})">
 
-      })
-      .join("");
+            حذف
+
+          </button>
+
+        </div>
+
+      `;
+
+    }).join("");
 
 }
 
+
+/* حذف */
 
 window.deleteReport =
   function (id) {
@@ -772,6 +691,8 @@ window.deleteReport =
 
   };
 
+
+/* اجرا */
 
 renderFilters();
 
