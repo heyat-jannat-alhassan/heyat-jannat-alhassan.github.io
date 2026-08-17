@@ -1,30 +1,22 @@
 <!doctype html>
 <html lang="fa" dir="rtl">
-
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-
-  <title>هیئت جنت الحسن | آرشیو گزارش صوتی</title>
-
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>هیئت جنت الحسن | آرشیو گزارش صوتی</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header class="top">
-
   <button class="menu" id="menuBtn">☰</button>
 
   <div class="brand">
     <h1>هیئت جنت الحسن</h1>
     <p>آرشیو گزارش‌های صوتی</p>
   </div>
-
 </header>
-
-
-<!-- منوی سه خط -->
 
 <div class="drawer" id="drawer">
 
@@ -33,11 +25,8 @@
   <h2>منوی سایت</h2>
 
   <a href="#home">خانه</a>
-
   <a href="#latest">آخرین گزارش‌ها</a>
-
   <a href="#archive">آرشیو صوتی</a>
-
   <a href="#channels">کانال‌های هیئت</a>
 
   <hr>
@@ -50,189 +39,163 @@
 
 <div class="shade" id="shade"></div>
 
-
 <main id="home">
 
-  <!-- بخش اصلی -->
+<section class="hero">
 
-  <section class="hero">
+  <span>شروع آرشیو: محرم ۱۴۰۵</span>
 
-    <span>
-      شروع آرشیو: محرم ۱۴۰۵
-    </span>
+  <h2>
+    گزارش‌های صوتی
+    <br>
+    <b>هیئت جنت الحسن</b>
+  </h2>
 
-    <h2>
-      گزارش‌های صوتی
-      <br>
-      <b>هیئت جنت الحسن</b>
-    </h2>
+  <p>
+    آرشیوی مرتب، قابل جست‌وجو و ساده برای پخش و دانلود گزارش‌های صوتی هیئت جنت الحسن.
+  </p>
 
-    <p>
-      آرشیوی مرتب، قابل جست‌وجو و ساده
-      برای پخش و دانلود گزارش‌های صوتی هیئت جنت الحسن.
-    </p>
+  <a class="primary" href="#archive">
+    مشاهده آرشیو
+  </a>
 
-    <a class="primary" href="#archive">
-      مشاهده آرشیو
-    </a>
-
-  </section>
+</section>
 
 
-  <!-- آخرین گزارش‌ها -->
+<section id="latest" class="section">
 
-  <section id="latest" class="section">
-
-    <div class="head">
-
-      <div>
-        <small>تازه‌ترین‌ها</small>
-        <h3>آخرین گزارش‌ها</h3>
-      </div>
-
-      <div>
-        <button class="arr" id="prev">‹</button>
-        <button class="arr" id="next">›</button>
-      </div>
-
-    </div>
-
-    <div class="row" id="latestRow"></div>
-
-  </section>
-
-
-  <!-- آرشیو -->
-
-  <section id="archive" class="section">
-
-    <small>
-      محرم ۱۴۰۵ به بعد
-    </small>
-
-    <h3>
-      آرشیو گزارش‌ها
-    </h3>
-
-
-    <div class="filters">
-
-      <input
-        id="q"
-        placeholder="جست‌وجوی عنوان، مداح یا سخنران..."
-      >
-
-      <select id="style">
-        <option value="">سبک</option>
-        <option>سخنرانی</option>
-        <option>روضه</option>
-        <option>زمینه</option>
-        <option>تک</option>
-        <option>شور</option>
-      </select>
-
-      <select id="event">
-        <option value="">سبک مراسم</option>
-        <option>عزاداری</option>
-        <option>مولودی</option>
-      </select>
-
-      <select id="year">
-        <option value="">سال</option>
-        <option>۱۴۰۵</option>
-      </select>
-
-      <select id="reciter">
-        <option value="">مداح</option>
-      </select>
-
-      <select id="speaker">
-        <option value="">سخنران</option>
-      </select>
-
-    </div>
-
-    <div class="grid" id="grid"></div>
-
-  </section>
-
-
-  <!-- کانال‌ها -->
-
-  <section id="channels" class="channels">
-
-    <h3>
-      کانال‌های رسمی هیئت جنت الحسن
-    </h3>
+  <div class="head">
 
     <div>
-
-      <a href="#" onclick="return false">
-        بله | @jannatolhasan_a
-      </a>
-
-      <a href="#" onclick="return false">
-        ایتا | @jannatolhasan_a
-      </a>
-
+      <small>تازه‌ترین‌ها</small>
+      <h3>آخرین گزارش‌ها</h3>
     </div>
 
-  </section>
-
-
-  <!-- ورود مدیریت -->
-
-  <section id="adminLogin" class="admin-login">
-
-    <div class="login-card">
-
-      <h3>🔐 ورود به پنل مدیریت</h3>
-
-      <p>
-        برای ورود، رمز مدیریت را وارد کنید.
-      </p>
-
-      <input
-        type="password"
-        id="adminPassword"
-        placeholder="رمز مدیریت"
-      >
-
-      <button
-        class="primary"
-        id="loginBtn">
-        ورود
-      </button>
-
-      <p
-        class="error"
-        id="loginError">
-      </p>
-
+    <div>
+      <button class="arr" id="prev">‹</button>
+      <button class="arr" id="next">›</button>
     </div>
 
-  </section>
+  </div>
+
+  <div class="row" id="latestRow"></div>
+
+</section>
 
 
-  <!-- پنل مدیریت -->
+<section id="archive" class="section">
 
-  <section
-    id="adminPanel"
-    class="admin-panel hidden">
+  <small>محرم ۱۴۰۵ به بعد</small>
+
+  <h3>آرشیو گزارش‌ها</h3>
+
+  <div class="filters">
+
+    <input
+      id="q"
+      placeholder="جست‌وجوی عنوان، مداح یا سخنران..."
+    >
+
+    <select id="style">
+      <option value="">سبک</option>
+      <option>سخنرانی</option>
+      <option>روضه</option>
+      <option>زمینه</option>
+      <option>تک</option>
+      <option>شور</option>
+    </select>
+
+    <select id="event">
+      <option value="">سبک مراسم</option>
+      <option>عزاداری</option>
+      <option>مولودی</option>
+    </select>
+
+    <select id="year">
+      <option value="">سال</option>
+      <option>۱۴۰۵</option>
+    </select>
+
+    <select id="reciter">
+      <option value="">مداح</option>
+    </select>
+
+    <select id="speaker">
+      <option value="">سخنران</option>
+    </select>
+
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+</section>
+
+
+<section id="channels" class="channels">
+
+  <h3>کانال‌های رسمی هیئت جنت الحسن</h3>
+
+  <div>
+    <a href="#" onclick="return false">
+      بله | @jannatolhasan_a
+    </a>
+
+    <a href="#" onclick="return false">
+      ایتا | @jannatolhasan_a
+    </a>
+  </div>
+
+</section>
+
+
+<!-- ورود مدیریت -->
+
+<section id="adminLogin" class="adminbox">
+
+  <div id="loginBox">
+
+    <h3>🔐 پنل مدیریت</h3>
+
+    <p>
+      برای ورود رمز مدیریت را وارد کنید.
+    </p>
+
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="رمز مدیریت"
+    >
+
+    <button
+      class="primary"
+      id="loginBtn">
+      ورود
+    </button>
+
+    <p
+      class="error"
+      id="loginError">
+    </p>
+
+  </div>
+
+
+  <!-- پنل بعد از ورود -->
+
+  <div
+    id="panelBox"
+    class="hidden">
 
     <div class="panel-head">
 
       <div>
         <small>مدیریت سایت</small>
-
-        <h3>
-          پنل مدیریت
-        </h3>
+        <h3>پنل مدیریت</h3>
       </div>
 
       <button
-        id="logoutBtn"
-        class="logout">
+        class="logout"
+        id="logoutBtn">
         خروج
       </button>
 
@@ -257,44 +220,29 @@
       >
 
       <select id="newStyle">
-
-        <option value="">
-          انتخاب سبک
-        </option>
-
+        <option value="">انتخاب سبک</option>
         <option>سخنرانی</option>
         <option>روضه</option>
         <option>زمینه</option>
         <option>تک</option>
         <option>شور</option>
-
       </select>
-
 
       <select id="newEvent">
-
-        <option value="">
-          انتخاب نوع مراسم
-        </option>
-
+        <option value="">انتخاب نوع مراسم</option>
         <option>عزاداری</option>
         <option>مولودی</option>
-
       </select>
-
 
       <input
         id="newAudio"
         placeholder="لینک فایل صوتی"
       >
 
-
       <button
         class="primary"
         id="addReport">
-
         افزودن گزارش
-
       </button>
 
     </div>
@@ -310,18 +258,17 @@
 
     </div>
 
-  </section>
+  </div>
+
+</section>
 
 </main>
-
 
 <footer>
   هیئت جنت الحسن © ۱۴۰۵
 </footer>
 
-
 <script src="app.js"></script>
 
 </body>
-
 </html>
