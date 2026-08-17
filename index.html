@@ -1,8 +1,8 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>هیئت جنت الحسن</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,10 +18,9 @@
   <button class="menu" id="menuBtn">☰</button>
 
   <div class="brand">
-    <div class="logo">جنت</div>
     <div>
       <h1>هیئت جنت الحسن</h1>
-      <p>آرشیو صوتی هیئت</p>
+      <p>آرشیو گزارش صوتی</p>
     </div>
   </div>
 </header>
@@ -34,9 +33,9 @@
   <h2>منو</h2>
 
   <a href="#home">خانه</a>
-  <a href="#archive">آرشیو صوتی</a>
-  <a href="#about">درباره هیئت</a>
-
+  <a href="#latest">آخرین جلسه</a>
+  <a href="#archive">آرشیو جلسات</a>
+  <a href="#media">رسانه ها</a>
   <a href="#" class="admin" id="guideBtn">راهنما</a>
 </aside>
 
@@ -46,22 +45,38 @@
   <span>آرشیو رسمی هیئت</span>
 
   <h2>
-    صوت‌های مراسمات<br>
+    آرشیو گزارش صوتی<br>
     <b>هیئت جنت الحسن</b>
   </h2>
 
   <p>
-    آرشیو صوتی مراسمات هیئت جنت الحسن؛
-    پخش آنلاین و دانلود فایل‌های صوتی.
+    آرشیو گزارش صوتی هیئت جنت الحسن
   </p>
 </section>
 
+<!-- آخرین جلسه -->
+<section class="section latest-section" id="latest">
+
+  <div class="head">
+    <div>
+      <small>گزارش جدید</small>
+      <h3>آخرین جلسه</h3>
+    </div>
+  </div>
+
+  <div class="latest-row" id="latestRow">
+    <div class="loading">در حال دریافت آخرین جلسه...</div>
+  </div>
+
+</section>
+
+<!-- آرشیو -->
 <section class="section" id="archive">
 
   <div class="head">
     <div>
       <small>آرشیو</small>
-      <h3>فایل‌های صوتی</h3>
+      <h3>آرشیو جلسات</h3>
     </div>
   </div>
 
@@ -74,19 +89,20 @@
     >
 
     <select id="styleFilter">
-      <option value="">همه سبک‌ها</option>
+      <option value="">سبک</option>
+      <option value="سخنرانی">سخنرانی</option>
+      <option value="روضه">روضه</option>
       <option value="زمینه">زمینه</option>
+      <option value="تک">تک</option>
       <option value="شور">شور</option>
-      <option value="سینه زنی">سینه زنی</option>
+      <option value="سرود">سرود</option>
+      <option value="مدح">مدح</option>
     </select>
 
     <select id="typeFilter">
-      <option value="">همه مراسمات</option>
-      <option value="روضه">روضه</option>
-      <option value="مداحی">مداحی</option>
+      <option value="">مناسبت</option>
+      <option value="عزاداری">عزاداری</option>
       <option value="مولودی">مولودی</option>
-      <option value="مراسم">مراسم</option>
-      <option value="سخنرانی">سخنرانی</option>
     </select>
 
   </div>
@@ -97,11 +113,23 @@
 
 </section>
 
-<section class="channels" id="about">
-  <h3>هیئت جنت الحسن</h3>
-  <p>
-    آرشیو صوتی مراسمات هیئت.
-  </p>
+<!-- رسانه ها -->
+<section class="channels" id="media">
+
+  <h3>رسانه ها</h3>
+
+  <a href="https://ble.ir/jannatolhasan_a"
+     target="_blank"
+     rel="noopener">
+    بله
+  </a>
+
+  <a href="https://eitaa.com/jannatolhasan_a"
+     target="_blank"
+     rel="noopener">
+    ایتا
+  </a>
+
 </section>
 
 </main>
@@ -110,7 +138,8 @@
   هیئت جنت الحسن
 </footer>
 
-<!-- پنل مدیریت -->
+
+<!-- پنل راهنما -->
 <div class="admin-overlay" id="adminOverlay">
 
   <div class="admin-panel">
@@ -118,9 +147,6 @@
     <button class="admin-close" id="adminClose">×</button>
 
     <h2>راهنما</h2>
-    <p class="admin-subtitle">
-      مدیریت آرشیو صوتی
-    </p>
 
     <div id="loginBox">
 
@@ -140,37 +166,44 @@
 
     </div>
 
+
     <div id="adminContent" class="hidden">
 
       <div class="admin-section">
 
-        <h3>آپلود فایل صوتی</h3>
+        <h3>افزودن گزارش صوتی</h3>
 
-        <label>عنوان فایل</label>
-        <input id="titleInput" type="text" placeholder="مثلاً شب اول محرم">
+        <label>عنوان</label>
+        <input
+          id="titleInput"
+          type="text"
+          placeholder="عنوان گزارش"
+        >
 
-        <label>مداح</label>
-        <input id="reciterInput" type="text" placeholder="نام مداح">
-
-        <label>سخنران</label>
-        <input id="speakerInput" type="text" placeholder="نام سخنران">
+        <label>مداح / سخنران</label>
+        <input
+          id="performerInput"
+          type="text"
+          placeholder="مثلاً: مداح / سخنران"
+        >
 
         <label>سبک</label>
         <select id="styleInput">
           <option value="">انتخاب سبک</option>
+          <option value="سخنرانی">سخنرانی</option>
+          <option value="روضه">روضه</option>
           <option value="زمینه">زمینه</option>
+          <option value="تک">تک</option>
           <option value="شور">شور</option>
-          <option value="سینه زنی">سینه زنی</option>
+          <option value="سرود">سرود</option>
+          <option value="مدح">مدح</option>
         </select>
 
-        <label>نوع مراسم</label>
+        <label>مناسبت</label>
         <select id="typeInput">
-          <option value="">انتخاب نوع مراسم</option>
-          <option value="روضه">روضه</option>
-          <option value="مداحی">مداحی</option>
+          <option value="">انتخاب مناسبت</option>
+          <option value="عزاداری">عزاداری</option>
           <option value="مولودی">مولودی</option>
-          <option value="مراسم">مراسم</option>
-          <option value="سخنرانی">سخنرانی</option>
         </select>
 
         <label class="file-label">
@@ -190,17 +223,14 @@
           آپلود فایل
         </button>
 
-        <div class="progress-box">
-          <div id="progressBar"></div>
-        </div>
-
         <div id="uploadStatus" class="status"></div>
 
       </div>
 
+
       <div class="admin-section">
 
-        <h3>مدیریت فایل‌ها</h3>
+        <h3>فایل‌های موجود</h3>
 
         <div id="manageList"></div>
 
@@ -209,10 +239,11 @@
     </div>
 
   </div>
-
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="app.js"></script>
+
 </body>
 </html>
