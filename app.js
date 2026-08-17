@@ -1,4 +1,4 @@
-const ADMIN_PASSWORD = "1405";
+const ADMIN_PASSWORD="8041";
 
 const defaultReports = [
   {
